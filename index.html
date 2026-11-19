@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Hockey Camp">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#1565c0">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<title>Elias's Hockey Camp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: cheerful coach for a 5-year-old, big and simple; a calm Coach Corner for the parent
+   IDEA: a rink board and team locker room — drill cards like hockey cards
+   PICTURE: an animated little player in a helmet acting out every drill, beside a giant timer
+   COLOUR and TYPE: ice white, rink blue, goal-line red, gold stars; Lilita One + Nunito
+   LAYOUT: one column on narrow, two on iPad; 64px+ touch targets for small hands */
+:root{color-scheme:light dark;--bg:light-dark(#f2f7fc,#0b1726);--card:light-dark(#fff,#13243a);--ink:light-dark(#10223a,#eaf2fb);--mute:light-dark(#4e6580,#9db3cc);--blue:light-dark(#1565c0,#4fa3ff);--red:#e3342f;--gold:#ffb703;--line:light-dark(#d6e3f0,#24405f);--field:light-dark(#f6f9fc,#0f1e31)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.5 Nunito,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:"Lilita One",Nunito,sans-serif;font-weight:400;line-height:1.05;margin:0;text-wrap:balance}
+button,input,select,textarea{font:inherit;color:inherit}
+button{border:0;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:4px solid var(--gold);outline-offset:2px}
+.top{display:flex;align-items:center;gap:12px;padding:12px max(4vw,16px);background:var(--blue);color:#fff;position:sticky;top:0;z-index:5;border-bottom:6px solid var(--red)}
+.top h1{font-size:clamp(22px,4vw,34px);flex:1}
+.stars{color:#fff;cursor:pointer;min-height:44px;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.18);padding:6px 14px;border-radius:99px;font-weight:800;font-size:22px;white-space:nowrap}
+.coachbtn{background:rgba(255,255,255,.14);color:#fff;border-radius:99px;padding:8px 14px;font-weight:800;font-size:15px;min-height:44px;white-space:nowrap}
+.coachbtn.hold{background:var(--gold);color:#10223a}
+.wrap{max-width:1100px;margin:0 auto;padding:clamp(18px,3vw,36px) max(4vw,16px) 60px}
+.hero{background:var(--card);border-radius:28px;padding:clamp(20px,3vw,32px);display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:center;box-shadow:0 6px 0 var(--line)}
+.hero h2{font-size:clamp(32px,5vw,50px)}
+.hero p{color:var(--mute);margin:8px 0 18px}
+.go{background:var(--red);color:#fff;font-family:"Lilita One";font-size:clamp(24px,3.4vw,32px);padding:20px 30px;border-radius:22px;box-shadow:0 6px 0 #a21e1a;width:100%;min-height:84px}
+.go:active,.tile:active,.btn:active{transform:translateY(4px);box-shadow:none}
+.plan{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.plan li{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px}
+.dot{width:14px;height:14px;border-radius:50%;flex:none}
+h3.sec{font-size:28px;margin:34px 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.tile{background:var(--c);color:#fff;border-radius:24px;padding:16px 18px;text-align:left;min-height:170px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 6px 0 rgba(0,0,0,.25);overflow:hidden}
+.tile svg{width:96px;height:77px;color:#fff;margin:-6px 0 0 -10px}
+.tile b{font-family:"Lilita One";font-weight:400;font-size:28px;line-height:1}
+.tile small{font-weight:700;opacity:.92;font-size:15px}
+.week{display:flex;gap:10px;flex-wrap:wrap}
+.day{background:var(--card);border-radius:18px;padding:10px 6px;width:72px;text-align:center;font-weight:800;font-size:14px;color:var(--mute);box-shadow:0 4px 0 var(--line)}
+.day .s{font-size:30px;line-height:1.2;color:var(--line)}.day.on .s{color:var(--gold)}.day.today{outline:3px solid var(--blue)}
+.back{background:var(--card);border-radius:16px;padding:12px 20px;font-weight:800;min-height:56px;box-shadow:0 4px 0 var(--line)}
+.list{display:grid;gap:14px;margin-top:18px}
+.drill{background:var(--card);border-radius:22px;padding:10px 20px 10px 10px;display:flex;align-items:center;gap:14px;text-align:left;min-height:96px;box-shadow:0 5px 0 var(--line);border-left:12px solid var(--c);width:100%}
+.drill svg{width:100px;height:80px;flex:none;color:var(--ink)}
+.drill b{font-family:"Lilita One";font-weight:400;font-size:25px;display:block;line-height:1.1}
+.drill span{color:var(--mute);font-weight:700;font-size:15px}
+.drill .g{margin-left:auto;font-size:28px;color:var(--gold);flex:none}
+.bar{height:16px;background:var(--line);border-radius:99px;overflow:hidden;margin:14px 0 4px}.bar i{display:block;height:100%;background:var(--gold);border-radius:99px;transition:width .4s}
+.play{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;margin-top:16px;align-items:start}
+.pname{font-size:clamp(34px,6vw,56px);color:var(--c)}
+.figbox{background:var(--card);border-radius:26px;margin:14px 0;box-shadow:0 6px 0 var(--line);border:4px solid var(--c);overflow:hidden}
+.figbox svg{display:block;width:100%;height:auto;max-height:300px;color:var(--ink)}
+.meter{background:var(--card);border-radius:30px;padding:20px;display:grid;justify-items:center;gap:16px;box-shadow:0 6px 0 var(--line)}
+.ring{width:min(300px,70vw);aspect-ratio:1;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .n{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-family:"Lilita One";font-size:clamp(64px,12vw,100px);line-height:1}
+.ring .n small{display:block;font-family:Nunito;font-weight:800;font-size:20px;color:var(--mute)}
+.row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;width:100%}
+.btn{flex:1 1 140px;min-height:68px;border-radius:20px;font-family:"Lilita One";font-size:25px;background:var(--blue);color:#fff;box-shadow:0 6px 0 rgba(0,0,0,.3);display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;padding:0 16px}
+.btn.alt{background:var(--card);color:var(--ink);box-shadow:0 6px 0 var(--line);border:3px solid var(--line)}
+.btn.done{background:#1f9d55}.btn.yt{background:#cc0000}.btn.vid{background:var(--gold);color:#10223a}
+.puck{width:min(270px,64vw);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 35%,#3b3f46,#0d0f12 70%);color:#fff;display:grid;place-items:center;font-family:"Lilita One";font-size:clamp(60px,11vw,96px);box-shadow:0 12px 0 #000a,inset 0 -10px 0 #0006}
+.puck small{display:block;font-family:Nunito;font-size:20px;font-weight:800;opacity:.75;margin-top:-10px}
+.puck:active{transform:scale(.94)}
+.steps{margin:6px 0 14px;padding-left:1.3em;font-size:21px;font-weight:700}
+.steps li{margin-bottom:8px}
+.tip{background:var(--card);border-radius:18px;padding:14px 18px;font-size:16px;color:var(--mute);border:2px dashed var(--line)}
+.tip b{color:var(--ink)}
+.need{display:inline-block;background:var(--c);color:#fff;border-radius:99px;padding:4px 14px;font-weight:800;font-size:15px;margin-top:10px}
+.pop{position:fixed;inset:0;display:grid;place-items:center;background:rgba(11,23,38,.6);z-index:20;animation:fade .2s;padding:16px}
+.pop>div{background:var(--card);border-radius:32px;padding:28px 36px;text-align:center;box-shadow:0 10px 0 var(--line);max-width:min(900px,96vw);width:auto}
+.pop .bigstar{font-size:120px;color:var(--gold);line-height:1;animation:spin .7s}
+.pop h2{font-size:40px;margin-top:8px}
+.pop video{display:block;width:min(860px,88vw);max-height:66vh;border-radius:18px;background:#000;margin:12px 0}
+details{margin-top:34px;background:var(--card);border-radius:20px;padding:16px 20px;font-size:16px;color:var(--mute)}
+summary{font-weight:800;color:var(--ink);cursor:pointer;min-height:32px}
+details li{margin-bottom:6px}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+.vcard{background:var(--card);border-radius:22px;overflow:hidden;text-decoration:none;color:var(--ink);box-shadow:0 5px 0 var(--line);display:flex;flex-direction:column;transition:transform .2s}
+.vcard:active{transform:translateY(4px);box-shadow:none}.vcard.pick{outline:6px solid var(--gold);transform:scale(1.03)}
+.th{position:relative;aspect-ratio:16/9;background:#10223a}.th img{width:100%;height:100%;object-fit:cover;display:block}
+.th .len{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.82);color:#fff;font-weight:800;font-size:14px;padding:2px 8px;border-radius:6px}
+.th .ok{position:absolute;left:8px;top:8px;background:#1f9d55;color:#fff;font-weight:800;font-size:14px;padding:3px 10px;border-radius:99px}
+.vcard .tx{padding:12px 16px 16px;display:grid;gap:4px}.vcard b{font-size:18px;line-height:1.25}.vcard small{color:var(--mute);font-weight:700;font-size:14px}
+.vstack{display:flex;height:70px;margin-bottom:8px}.vstack img{height:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;border:3px solid #fff;margin-right:-34px;box-shadow:0 3px 8px #0005}
+.rstrip{display:flex;align-items:center;gap:16px;width:100%;background:var(--card);border-radius:24px;padding:12px 20px;margin-bottom:18px;box-shadow:0 5px 0 var(--line);text-align:left}
+.rstrip b{font-family:"Lilita One";font-weight:400;font-size:26px;line-height:1.05;display:block}.rstrip .bar{margin:6px 0 2px}.rstrip small{color:var(--mute);font-weight:800;font-size:15px}
+.rstrip .pill{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.rstrip .pill span{background:var(--field);border-radius:99px;padding:6px 12px;font-weight:800;font-size:17px;white-space:nowrap}
+.prize{background:var(--card);border-radius:22px;padding:14px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 5px 0 var(--line);border-left:12px solid var(--gold)}
+.prize b{font-family:"Lilita One";font-weight:400;font-size:24px;display:block;line-height:1.1}.prize span{color:var(--mute);font-weight:800;font-size:15px}
+.badge{border-radius:22px;padding:16px;background:var(--card);box-shadow:0 5px 0 var(--line);text-align:center;display:grid;gap:4px;justify-items:center}
+.badge .ic{font-size:44px;line-height:1.1}.badge b{font-family:"Lilita One";font-weight:400;font-size:21px}.badge small{color:var(--mute);font-weight:700;font-size:14px}.badge.off{opacity:.5;filter:grayscale(1)}
+.lrow{display:grid;grid-template-columns:minmax(0,1fr) 110px 52px;gap:10px;align-items:end;margin-bottom:6px}.lrow .fld{margin:0}
+.yt-frame{position:relative;width:min(860px,calc(96vw - 84px));aspect-ratio:16/9;margin:12px 0;border-radius:16px;overflow:hidden;background:#000}.yt-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.link{background:none;color:var(--blue);text-decoration:underline;font-size:16px;font-weight:700;padding:8px 0;min-height:44px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#10223a;color:#fff;padding:12px 20px;border-radius:14px;font-weight:800;z-index:30;font-size:16px;max-width:90vw;text-align:center}
+/* coach corner */
+.panel{background:var(--card);border-radius:22px;padding:18px 20px;box-shadow:0 5px 0 var(--line);margin-top:16px}
+.panel h3{font-size:26px;margin-bottom:6px}
+.note{color:var(--mute);font-size:15px;margin:0 0 10px}
+.mix{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.mixrow{display:flex;align-items:center;gap:10px;background:var(--field);border-radius:14px;padding:8px 10px;font-weight:800;font-size:16px}
+.mixrow .nm{flex:1}
+.step{width:44px;height:44px;border-radius:12px;background:var(--blue);color:#fff;font-size:24px;font-weight:800;line-height:1}
+.mixrow output{width:26px;text-align:center;font-size:20px}
+.crow{display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid var(--line)}
+.crow svg{width:76px;height:61px;flex:none;color:var(--ink)}
+.crow .nm{flex:1;font-weight:800;font-size:17px;line-height:1.25}
+.crow.off{opacity:.45}
+.chip{display:inline-block;font-size:12px;font-weight:800;padding:2px 8px;border-radius:99px;background:var(--field);color:var(--mute);margin:2px 4px 0 0;border:1px solid var(--line)}
+.sbtn{background:var(--blue);color:#fff;border-radius:12px;padding:10px 16px;font-weight:800;min-height:44px;font-size:16px;white-space:nowrap}
+.sbtn.alt{background:var(--field);color:var(--ink);border:2px solid var(--line)}.sbtn.red{background:var(--red)}
+.form{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:20px;margin-top:16px;align-items:start}
+.fld{display:grid;gap:4px;margin-bottom:14px;font-weight:800;font-size:15px}
+.fld input:not([type=checkbox]),.fld select,.fld textarea{font-size:17px;font-weight:600;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--field);width:100%;min-height:48px}
+.fld textarea{min-height:120px;resize:vertical;font-family:Nunito}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.chk{display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px;min-height:44px}
+.chk input{width:26px;height:26px;accent-color:var(--blue)}
+.vstat{font-size:15px;color:var(--mute);font-weight:700}
+@keyframes spin{from{transform:scale(.2) rotate(-180deg)}to{transform:none}}@keyframes fade{from{opacity:0}}
+@media(prefers-reduced-motion:reduce){.pop,.pop .bigstar{animation:none}.bar i{transition:none}}
+@media(max-width:760px){.hero,.play,.form{grid-template-columns:minmax(0,1fr)}.day{width:calc((100% - 60px)/7);padding:8px 2px}.top h1{font-size:20px}}
+</style>
+</head>
+<body>
+<header class="top"><h1>Elias's Hockey Camp</h1><button class="stars" id="starbtn" aria-label="My rewards"><span style="color:var(--gold)">★</span><span id="sc">0</span></button><button class="coachbtn" id="coach" aria-label="Coach corner, press and hold">Coach</button></header>
+<main class="wrap" id="app"></main>
+<script>
+{
+/* ---------- helpers ---------- */
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LS={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const ytOk=u=>/^https:\/\/(www\.|m\.)?(youtube\.com|youtu\.be)\/\S+$/i.test(String(u||''));
+const dstr=d=>d.toLocaleDateString('en-CA');const today=()=>dstr(new Date());
+function toast(t){const e=document.createElement('div');e.className='toast';e.textContent=t;document.body.appendChild(e);setTimeout(()=>e.remove(),2600)}
+
+/* ---------- animation engine: a little player acting out each drill ---------- */
+const po=(b,o)=>Object.assign({},b,o);
+const BASE={H:[100,32],N:[100,48],P:[100,92],Le:[86,68],Lh:[82,90],Re:[114,68],Rh:[118,90],Lk:[94,120],Lf:[92,148],Rk:[106,120],Rf:[108,148]};
+const ST={H:[100,42],N:[100,58],P:[100,98],Le:[90,76],Lh:[94,96],Re:[114,74],Rh:[108,80],Lk:[86,122],Lf:[82,148],Rk:[114,122],Rf:[118,148]};
+const SD={H:[92,40],N:[96,56],P:[100,96],Le:[106,72],Lh:[116,96],Re:[100,74],Rh:[104,78],Lk:[92,122],Lf:[84,148],Rk:[112,122],Rf:[118,148]};
+const SQ=po(BASE,{H:[100,50],N:[100,64],P:[100,104],Le:[86,84],Lh:[90,112],Re:[114,84],Rh:[110,112],Lk:[86,124],Lf:[88,148],Rk:[114,124],Rf:[112,148]});
+const DK=po(BASE,{H:[100,72],N:[100,86],P:[100,122],Le:[86,100],Lh:[80,116],Re:[114,100],Rh:[120,116],Lk:[80,128],Lf:[86,148],Rk:[120,128],Rf:[114,148]});
+const AIR=po(BASE,{Lk:[92,114],Rk:[108,114],Lf:[90,138],Rf:[110,138],Le:[80,60],Lh:[72,46],Re:[120,60],Rh:[128,46]});
+const HK1=po(BASE,{Lk:[88,100],Lf:[94,124],Lh:[96,62],Le:[84,72],Rh:[120,94]}),HK2=po(BASE,{Rk:[112,100],Rf:[106,124],Rh:[104,62],Re:[116,72],Lh:[80,94]});
+const WIND=po(SD,{P:[94,98],H:[86,42],N:[90,58],Rh:[96,76]}),REL=po(SD,{P:[108,96],H:[110,40],N:[108,56],Rh:[112,70],Lk:[100,122],Rk:[120,120]});
+const BR={H:[152,104],N:[140,108],P:[88,98],Le:[146,128],Lh:[150,148],Re:[138,128],Rh:[140,148],Lk:[82,124],Lf:[76,148],Rk:[94,124],Rf:[88,148]};
+const CR={H:[150,98],N:[138,108],P:[90,112],Le:[136,128],Lh:[130,148],Re:[142,128],Rh:[138,148],Lk:[72,96],Lf:[64,148],Rk:[80,96],Rf:[74,148]};
+const PL={H:[160,114],N:[148,118],P:[100,126],Le:[146,148],Lh:[162,148],Re:[144,148],Rh:[158,148],Lk:[76,136],Lf:[50,146],Rk:[78,137],Rf:[52,147]};
+const WS={H:[66,62],N:[66,78],P:[68,116],Le:[78,96],Lh:[96,110],Re:[76,98],Rh:[94,112],Lk:[104,116],Lf:[104,148],Rk:[106,118],Rf:[106,148]};
+const SM={H:[158,136],N:[146,140],P:[100,142],Le:[164,140],Lh:[182,140],Re:[162,141],Rh:[180,141],Lk:[76,142],Lf:[52,142],Rk:[76,143],Rf:[52,143]};
+const FL=po(BASE,{Rk:[118,110],Rf:[100,120],Le:[74,62],Lh:[58,66],Re:[126,62],Rh:[142,66]});
+const BF={H:[100,74],N:[100,90],P:[100,132],Le:[86,112],Lh:[96,138],Re:[114,112],Rh:[104,138],Lk:[66,130],Lf:[96,144],Rk:[134,130],Rf:[104,144]};
+const k=(p,t,x)=>Object.assign({p,t},x||{});
+const dribK=(w=1)=>[k(ST,380,{B:[100-22*w,146],o:[100-34*w,144]}),k(po(ST,{Rh:[112,80]}),380,{B:[100+22*w,146],o:[100+34*w,144]})];
+const M={
+jacks:{n:'Jumping jacks',k:[k(BASE,350),k(po(BASE,{Le:[78,42],Lh:[84,16],Re:[122,42],Rh:[116,16],Lk:[84,120],Lf:[72,148],Rk:[116,120],Rf:[128,148]}),350)]},
+knees:{n:'High knees / running',k:[k(HK1,220),k(HK2,220)]},
+circles:{n:'Arm circles',k:[0,1,2,3].map(i=>{const a=i*Math.PI/2;return k(po(BASE,{Le:[78,50],Lh:[60+10*Math.cos(a),50+10*Math.sin(a)],Re:[122,50],Rh:[140-10*Math.cos(a),50+10*Math.sin(a)]}),200)})},
+kick:{n:'Leg kicks',k:[k(BASE,300),k(po(BASE,{Rk:[116,100],Rf:[128,72],Lh:[124,72],Le:[106,62]}),300),k(BASE,300),k(po(BASE,{Lk:[84,100],Lf:[72,72],Rh:[76,72],Re:[94,62]}),300)]},
+dribble:{n:'Dribble side to side',stick:1,k:dribK()},
+frontback:{n:'Dribble front to back',stick:1,k:[k(SD,420,{B:[104,146],o:[94,144]}),k(po(SD,{Rh:[108,80]}),420,{B:[150,146],o:[162,144]})]},
+weave:{n:'Weave around cups',stick:1,props:'cups',k:[k(ST,500,{dx:-40,B:[80,146],o:[68,144]}),k(ST,500,{dx:0,B:[118,146],o:[130,144]}),k(ST,500,{dx:40,B:[120,146],o:[132,144]}),k(ST,500,{dx:0,B:[80,146],o:[68,144]})]},
+course:{n:'Cup obstacle course',stick:1,props:'cups4',k:[k(ST,450,{dx:-60,B:[80,146],o:[68,144]}),k(ST,450,{dx:-20,B:[120,146],o:[132,144]}),k(ST,450,{dx:20,B:[80,146],o:[68,144]}),k(ST,450,{dx:60,B:[120,146],o:[132,144]})]},
+eyes:{n:'Eyes up! (finger card)',stick:1,props:'card',k:[...dribK(),...dribK()].map((x,i)=>({...x,txt:['3','5','2','4'][i]}))},
+toedrag:{n:'Toe drag',stick:1,k:[k(ST,360,{B:[70,146],o:[58,144]}),k(po(ST,{Rh:[112,80]}),300,{B:[104,146],o:[114,144]})]},
+onehand:{n:'One-hand dribble',stick:1,one:1,k:[k(po(ST,{Lh:[82,98],Le:[86,78]}),380,{B:[80,146],o:[68,144]}),k(po(ST,{Rh:[112,80],Lh:[82,98],Le:[86,78]}),380,{B:[122,146],o:[134,144]})]},
+shoot:{n:'Wrist shot',stick:1,props:'net',k:[k(WIND,600,{B:[70,146],o:[78,143]}),k(REL,260,{B:[150,118],o:[180,126]}),k(REL,500,{B:[150,118],o:[184,144]}),k(WIND,500,{B:[70,146]})]},
+corners:{n:'Shoot at targets',stick:1,props:'net2',k:[k(WIND,600,{B:[70,146],o:[78,143]}),k(REL,260,{B:[150,118],o:[184,116]}),k(REL,500,{B:[150,118],o:[186,144]}),k(WIND,500,{B:[70,146]})]},
+hops:{n:'Skater hops',k:[k(po(BASE,{Rk:[108,116],Rf:[122,132],Lh:[96,80],Rh:[132,80]}),300,{dx:-30}),k(AIR,220,{dy:-16}),k(po(BASE,{Lk:[92,116],Lf:[78,132],Rh:[104,80],Lh:[68,80]}),220,{dx:30}),k(AIR,220,{dy:-16})]},
+ready:{n:'Skater pose hold',k:[k(SQ,700),k(po(SQ,{H:[100,47],N:[100,61]}),700)]},
+duck:{n:'Duck walk',k:[k(po(DK,{Lf:[84,142],Lk:[78,124]}),300,{dx:-6}),k(po(DK,{Rf:[116,142],Rk:[122,124]}),300,{dx:6})]},
+quick:{n:'Quick feet',k:[k(po(SQ,{Lf:[88,140]}),110),k(po(SQ,{Rf:[112,140]}),110)]},
+bear:{n:'Bear crawl',k:[k(BR,350),k(po(BR,{Le:[154,126],Lh:[160,146],Rk:[102,122],Rf:[98,146],P:[92,96]}),350)]},
+crab:{n:'Crab walk',k:[k(CR,350),k(po(CR,{Lh:[124,146],Rk:[86,92],Rf:[84,146],P:[94,110]}),350)]},
+frog:{n:'Frog jumps',k:[k(po(DK,{Lh:[92,146],Rh:[108,146],Le:[88,128],Re:[112,128]}),400),k(po(BASE,{Le:[82,38],Lh:[80,16],Re:[118,38],Rh:[120,16]}),300,{dy:-30}),k(po(DK,{Lh:[92,146],Rh:[108,146],Le:[88,128],Re:[112,128]}),300)]},
+plank:{n:'Plank',k:[k(PL,900),k(po(PL,{P:[100,122]}),900)]},
+wall:{n:'Wall sit',props:'wall',k:[k(WS,800),k(po(WS,{Lh:[98,106]}),800)]},
+superman:{n:'Superman',k:[k(SM,700),k(po(SM,{H:[156,124],N:[146,132],Le:[164,126],Lh:[180,114],Re:[162,128],Rh:[178,116],Lk:[76,136],Lf:[54,126],Rk:[76,137],Rf:[54,127]}),700)]},
+flamingo:{n:'One-leg balance',k:[k(FL,600),k(po(FL,{Lh:[58,60],Rh:[142,72],H:[98,32]}),600)]},
+linehop:{n:'Line hops',props:'line',k:[k(SQ,260,{dx:-24}),k(AIR,200,{dy:-18}),k(SQ,200,{dx:24}),k(AIR,200,{dy:-18})]},
+lava:{n:'Hot lava hops',props:'pillows',k:[k(SQ,300,{dx:-60}),k(AIR,250,{dx:-30,dy:-24}),k(SQ,250,{dx:0}),k(AIR,250,{dx:30,dy:-24}),k(SQ,250,{dx:60}),k(AIR,250,{dx:30,dy:-24}),k(SQ,250,{dx:0}),k(AIR,250,{dx:-30,dy:-24})]},
+stopgo:{n:'Stop & go',k:[k(HK1,200),k(HK2,200),k(HK1,200),k(HK2,200),k(po(BASE,{Lh:[62,60],Rh:[138,60],Le:[78,58],Re:[122,58]}),200),k(po(BASE,{Lh:[62,60],Rh:[138,60],Le:[78,58],Re:[122,58]}),900)]},
+stretch:{n:'Reach & touch toes',k:[k(po(BASE,{Le:[90,30],Lh:[94,8],Re:[110,30],Rh:[106,8]}),900),k(po(BASE,{H:[100,110],N:[100,96],Le:[94,120],Lh:[94,146],Re:[106,120],Rh:[106,146]}),1100)]},
+butterfly:{n:'Butterfly stretch',k:[k(BF,400),k(po(BF,{Lk:[70,118],Rk:[130,118]}),400)]},
+armstretch:{n:'Arm across stretch',k:[k(po(BASE,{Le:[112,64],Lh:[128,64],Re:[118,76],Rh:[110,66]}),900),k(po(BASE,{Le:[112,62],Lh:[130,62],Re:[118,74],Rh:[112,64]}),900)]}
+};
+/* moves from his training sheets */
+const WD=po(ST,{Lk:[78,124],Lf:[64,148],Rk:[122,124],Rf:[136,148]});
+const XS=[30,62,96,134,170],XSEQ=[1,2,1,3,2,4,3,5,4,5,3,4,2,3,1,2];
+const LST=po(SD,{Le:[96,76],Lh:[98,96],Re:[100,76],Rh:[102,96]}),LUN={H:[100,56],N:[100,72],P:[100,112],Le:[98,92],Lh:[100,110],Re:[102,92],Rh:[104,110],Lk:[82,146],Lf:[62,148],Rk:[124,118],Rf:[126,148]};
+const TW={H:[100,64],N:[100,80],P:[100,124],Lk:[84,108],Lf:[80,140],Rk:[116,108],Rf:[120,140],Le:[86,98],Lh:[78,106],Re:[94,100],Rh:[82,108]};
+const PU={H:[160,96],N:[148,102],P:[100,120],Le:[148,124],Lh:[150,148],Re:[146,124],Rh:[148,148],Lk:[76,134],Lf:[50,146],Rk:[78,135],Rf:[52,147]};
+const BT=po(SQ,{Lf:[96,148],Rf:[104,148],Lk:[90,124],Rk:[110,124]}),BTA=po(AIR,{Lf:[96,138],Rf:[104,138],Lk:[94,116],Rk:[106,116]});
+Object.assign(M,{
+onehandF:{...M.onehand,n:'One-hand front handles (puck)',puck:1},
+onehandS:{n:'One-hand side handles (puck)',stick:1,one:1,puck:1,k:[k(po(SD,{Lh:[92,98],Le:[94,78]}),420,{B:[104,146],o:[96,144]}),k(po(SD,{Rh:[108,80],Lh:[92,98],Le:[94,78]}),420,{B:[150,146],o:[158,144]})]},
+twoF:{...M.dribble,n:'Front handles (puck)',puck:1},
+twoS:{...M.frontback,n:'Side handles (puck)',puck:1},
+wide:{n:'Wide toe to toe (puck)',stick:1,puck:1,k:[k(WD,480,{B:[64,146],o:[52,144]}),k(po(WD,{Rh:[112,80]}),480,{B:[136,146],o:[148,144]})]},
+xtox:{n:'X to X pattern (puck)',stick:1,puck:1,props:'xs',k:XSEQ.map(n=>k(ST,380,{dx:XS[n-1]-112,B:[100,146],o:[112,144]}))},
+fig8:{...M.weave,n:'Figure 8 around pucks',props:'pucks',puck:1},
+passer:{n:'Passer passes (puck)',stick:1,puck:1,props:'passer',k:[k(SD,300,{B:[124,146],o:[134,144]}),k(SD,320,{B:[128,146],o:[164,144]}),k(SD,320,{B:[124,146],o:[134,144]})]},
+bunny:{n:'Bunny hops',props:'line',k:[k(BT,260,{dx:-22}),k(BTA,200,{dy:-20}),k(BT,200,{dx:22}),k(BTA,200,{dy:-20})]},
+lunge:{n:'Lunges',k:[k(LST,700),k(LUN,600)]},
+squatW:{n:'Weight squats',db:1,k:[k(po(BASE,{Le:[88,72],Lh:[96,64],Re:[112,72],Rh:[104,64]}),600),k(po(BASE,{H:[100,50],N:[100,66],P:[100,112],Le:[88,90],Lh:[96,82],Re:[112,90],Rh:[104,82],Lk:[82,114],Lf:[86,148],Rk:[118,114],Rf:[114,148]}),600)]},
+twist:{n:'Weight twists',db:1,k:[k(TW,500),k(po(TW,{H:[104,64],Le:[106,100],Lh:[118,108],Re:[114,98],Rh:[122,106]}),500)]},
+press:{n:'Weight press',db:2,k:[k(po(BASE,{Le:[78,70],Lh:[82,50],Re:[122,70],Rh:[118,50]}),600),k(po(BASE,{Le:[82,32],Lh:[84,14],Re:[118,32],Rh:[116,14]}),500)]},
+pushup:{n:'Push ups',k:[k(PU,600),k(po(PU,{H:[162,124],N:[150,128],P:[100,134],Le:[134,130],Re:[132,131],Lk:[76,140],Rk:[78,141]}),600)]}
+});
+const mix=(a,b,e)=>[a[0]+(b[0]-a[0])*e,a[1]+(b[1]-a[1])*e];
+const ease=x=>x<.5?2*x*x:1-((-2*x+2)**2)/2;
+function state(m,ms){
+  const K=m.k,tot=K.reduce((s,x)=>s+x.t,0);let t=ms%tot,i=0;
+  while(i<K.length-1&&t>=K[i].t){t-=K[i].t;i++}
+  const b=K[i],a=K[(i-1+K.length)%K.length],e=b.t?ease(Math.min(1,t/b.t)):1;
+  const dx=(a.dx||0)+((b.dx||0)-(a.dx||0))*e,dy=(a.dy||0)+((b.dy||0)-(a.dy||0))*e,sh=q=>[q[0]+dx,q[1]+dy];
+  const p={};for(const j in b.p)p[j]=sh(mix(a.p[j],b.p[j],e));
+  const B=a.B&&b.B?sh(mix(a.B,b.B,e)):b.B?sh(b.B):null;
+  const o=a.o&&b.o?sh(mix(a.o,b.o,e)):null;
+  if(m.stick&&B&&!m.one){p.Lh=mix(p.Rh,B,.42);p.Le=[(p.N[0]+p.Lh[0])/2-8,(p.N[1]+p.Lh[1])/2+2]}
+  return{p,B,o,txt:e>.5?b.txt:a.txt};
+}
+const pl=(pts,c,w)=>`<polyline points="${pts.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ')}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+const PROPS={
+cups:'<path d="M62 150l8-18 8 18zM122 150l8-18 8 18z" fill="#ff7a1a"/>',
+cups4:'<path d="M32 150l8-18 8 18zM72 150l8-18 8 18zM112 150l8-18 8 18zM152 150l8-18 8 18z" fill="#ff7a1a"/>',
+net:'<g stroke="#e3342f" stroke-width="4" fill="none"><path d="M166 150V108h30v42"/></g><g stroke="currentColor" stroke-opacity=".25" stroke-width="1.5"><path d="M172 110v40M180 110v40M188 110v40M168 118h26M168 128h26M168 138h26"/></g>',
+wall:'<rect x="38" y="16" width="16" height="134" rx="3" fill="currentColor" fill-opacity=".18"/>',
+line:'<path d="M100 136v20" stroke="#e3342f" stroke-width="5" stroke-linecap="round"/>',
+pillows:'<g fill="#7b3fd1" fill-opacity=".45"><ellipse cx="40" cy="150" rx="22" ry="6"/><ellipse cx="100" cy="150" rx="22" ry="6"/><ellipse cx="160" cy="150" rx="22" ry="6"/></g><rect x="10" y="151" width="180" height="6" fill="#ff7a1a" opacity=".5"/>'};
+PROPS.xs=XS.map((x,i)=>`<path d="M${x-5} ${144+(i%2)*4}l10 10M${x+5} ${144+(i%2)*4}l-10 10" stroke="currentColor" stroke-width="3"/><text x="${x}" y="${139+(i%2)*4}" text-anchor="middle" font-size="9" font-weight="800" fill="currentColor">${i+1}</text>`).join('');
+PROPS.pucks='<ellipse cx="70" cy="149" rx="8" ry="3.5" fill="#9aa5b1"/><ellipse cx="130" cy="149" rx="8" ry="3.5" fill="#9aa5b1"/>';
+PROPS.passer='<rect x="170" y="134" width="24" height="16" rx="3" fill="currentColor"/><path d="M170 142h24" stroke="#ffb703" stroke-width="2"/>';
+PROPS.net2=PROPS.net+'<path d="M180 112l10 10M190 112l-10 10" stroke="#ffb703" stroke-width="3"/>';
+function draw(m,ms,c,mir){
+  const s=state(m,ms),p=s.p,ink='currentColor';
+  let g=pl([p.P,p.Lk,p.Lf],ink,7)+pl([p.P,p.Rk,p.Rf],ink,7);
+  if(s.B)g+=pl([p.Rh,s.B],'#9a6a3a',5)+pl([[s.B[0]-12,s.B[1]],[s.B[0]+12,s.B[1]]],'#111',6);
+  g+=pl([p.N,p.P],c,15)+pl([p.N,p.Le,p.Lh],c,7)+pl([p.N,p.Re,p.Rh],c,7);
+  const [hx,hy]=p.H;
+  g+=`<circle cx="${hx}" cy="${hy}" r="11" fill="#f6d2b0" stroke="${ink}" stroke-width="2.5"/><path d="M${hx-12} ${hy+1}A12 12 0 0 1 ${hx+12} ${hy+1}Z" fill="${c}"/><circle cx="${hx}" cy="${hy+4}" r="1.6" fill="${ink}"/>`;
+  const dbl=([x,y])=>`<g fill="#5b6470"><rect x="${x-7}" y="${y-1.5}" width="14" height="3"/><rect x="${x-9}" y="${y-5}" width="4" height="10" rx="1"/><rect x="${x+5}" y="${y-5}" width="4" height="10" rx="1"/></g>`;
+  if(m.db===2)g+=dbl(p.Lh)+dbl(p.Rh);else if(m.db)g+=dbl(mix(p.Lh,p.Rh,.5));
+  if(s.o)g+=m.puck?`<ellipse cx="${s.o[0]}" cy="${s.o[1]+2}" rx="7" ry="3.5" fill="#111"/>`:`<circle cx="${s.o[0]}" cy="${s.o[1]}" r="5.5" fill="#ff7a1a" stroke="#c4520a" stroke-width="1.5"/>`;
+  let out=`<line x1="8" y1="151" x2="192" y2="151" stroke="${ink}" stroke-opacity=".2" stroke-width="3"/>`+(PROPS[m.props]||'');
+  out+=mir?`<g transform="translate(200 0) scale(-1 1)">${g}</g>`:g;
+  if(m.props==='card'&&s.txt)out+=`<rect x="152" y="10" width="40" height="40" rx="8" fill="#fff" stroke="#10223a" stroke-width="2"/><text x="172" y="40" text-anchor="middle" font-family="Lilita One,sans-serif" font-size="28" fill="#e3342f">${s.txt}</text>`;
+  return out;
+}
+const still=(key,c)=>`<svg viewBox="0 0 200 160" aria-hidden="true">${draw(M[key]||M.jacks,0,c)}</svg>`;
+let anims=[],looping=false;
+function loop(now){anims=anims.filter(a=>a.el.isConnected);for(const a of anims)a.el.innerHTML=draw(a.m,now-a.t0,a.c,a.mir&&a.mir());if(anims.length)requestAnimationFrame(loop);else looping=false}
+function startAnims(){for(const el of document.querySelectorAll('svg[data-anim]')){if(anims.some(a=>a.el===el))continue;anims.push({el,m:M[el.dataset.anim]||M.jacks,c:el.dataset.c,t0:performance.now(),mir:el.dataset.mir?()=>T.half:null})}if(anims.length&&!looping){looping=true;requestAnimationFrame(loop)}}
+
+/* ---------- drills ---------- */
+const CATS=[
+{id:'warm',name:'Warm up',c:'#f26b1d',b:'Get the engine going',a:'jacks'},
+{id:'stick',name:'Stickhandling',c:'#1565c0',b:'Soft hands, eyes up',a:'dribble'},
+{id:'shoot',name:'Shooting',c:'#e3342f',b:'Pick the corners',a:'shoot'},
+{id:'legs',name:'Skating legs',c:'#7b3fd1',b:'Off-ice skater moves',a:'hops'},
+{id:'power',name:'Strength',c:'#1f9d55',b:'Animal moves & holds',a:'bear'},
+{id:'bal',name:'Balance',c:'#0c8a99',b:'Hops & quick feet',a:'flamingo'},
+{id:'cool',name:'Cool down',c:'#5a6b82',b:'Stretch it out',a:'stretch'}];
+const DEFMIX={warm:1,stick:0,shoot:0,legs:1,power:1,bal:1,cool:1};
+const VLIB={
+PLKUrliHdTpU4:[['Xk6I29zKcvs','20 min Total Body Strength – Hockey Workout (Follow Along)','20:46','Hockey Training','316a46ce234ad9c337b26abd06b4cd01'],
+['qTMh3y_QKu4','At Home Hockey Follow Along Workout','19:11','Hockey Training','1c37d301cc9fcb9547e922e7de049134'],
+['177-60lpLZE','Hockey Speed Workout – Train Like McDavid (10 Minute Follow Along)','12:07',"Pierre's Elite Performance",'af0483ff4cf71e09a0f69f876d382c0b'],
+['DLEWgkVlmHg','Off-Ice Skating Training – Hockey Tabata','4:11','Minárik Hockey Skills','9a730d7f4613157d96645d3c106c7b17'],
+['7HluVwbAv3w','5 Minute Daily Stickhandling Routine','6:31','How To Hockey – Coach Jeremy','2181e550e5f3416ff894cc66f52097bd'],
+['HxqbY6F5PJY','9-Minute At Home Hockey Workout','10:54','Hockey Training','4a80a6d5da9144d8d0c78ced8ed91212'],
+['8-LqKpnafHs','Hockey Leg Workout (At Home)','4:16','Hockey Training','6a38e6efdcefd2d2260dbe401936e3d9'],
+['fzkc9iUKFl4','Stay Strong on the Puck (Upper Body Workout)','20:49','Hockey Training','ee3b5a9dbfac392495dc147743b139bb'],
+['_ftLScGoVOI','Hockey Aerobic Conditioning (20 min Follow-Along)','22:37','Hockey Training','6ef8f41348f7a0c6f3779f6d79955db5'],
+['ex6v0WMkns8','Improve Your Hands – Stickhandling Session','10:58','Hockey Training','11d41f2dd5bc1968c9d677a489422b0b'],
+['tO_2mB53Bgs','Hockey Hip Mobility Routine (Follow Along)','12:12','Lawson McDonald','4a93eac75aee82ea6fc7e9068983fb11']],
+PLWDK_MTHIZtE:[['7HluVwbAv3w','5 Minute Daily Stickhandling Routine','6:31','How To Hockey – Coach Jeremy','2181e550e5f3416ff894cc66f52097bd'],
+['ex6v0WMkns8','Improve Your Hands – Stickhandling Session','10:58','Hockey Training','11d41f2dd5bc1968c9d677a489422b0b'],
+['RHtdlyH2YG0','30-Minute Stickhandling Session (Follow Along)','30:36','Hockey Training','68ab2e9c23cb764eb091cdbf42ac3376'],
+['EOni5VdW9vE','Connor Bedard Stickhandling Session (Follow Along)','10:46','Hockey Training','3fb64342a32bbb35cf6ed5358cbfc424'],
+['Nugvy8UFGM8','This Easy Move Will Make Your Stickhandling Smooth','5:24','How To Hockey – Coach Jeremy','7f76b11014d8f965ecfcd02a120aac98']]};
+const DEFRW={drill:1,session:10,long:5,s3:5,s7:15,wgoal:3,wbonus:10,
+ prizes:[{name:'Pick dessert',cost:50},{name:'New hockey tape colour',cost:100},{name:'Ice cream or a public skate',cost:250},{name:'New stick or gloves',cost:500}],
+ levels:[{name:'Rookie',at:0},{name:'Prospect',at:50},{name:'Pro',at:150},{name:'All-Star',at:300},{name:'Captain',at:600},{name:'Hall of Fame',at:1000}]};
+const normRW=o=>{o=o||{};const n=(v,d)=>{v=Math.round(+v);return Number.isFinite(v)?Math.max(0,Math.min(9999,v)):d};
+ return{drill:n(o.drill,1),session:n(o.session,10),long:n(o.long,5),s3:n(o.s3,5),s7:n(o.s7,15),wgoal:n(o.wgoal,3),wbonus:n(o.wbonus,10),
+ prizes:(Array.isArray(o.prizes)?o.prizes:DEFRW.prizes).slice(0,20).map(z=>({name:String(z.name||'Prize').slice(0,50),cost:Math.max(1,n(z.cost,50))})),
+ levels:(Array.isArray(o.levels)&&o.levels.length?o.levels:DEFRW.levels).slice(0,12).map(z=>({name:String(z.name||'Level').slice(0,30),at:n(z.at,0)}))}};
+const fixP=o=>{o=o||{};return{stars:+o.stars||0,total:+(o.total??o.stars)||0,days:o.days||{},full:o.full||{},vw:o.vw||{},n:+o.n||0,sess:o.sess||{},bd:o.bd||{},claims:Array.isArray(o.claims)?o.claims.slice(-30):[],sb:o.sb||{},wk:o.wk||{},rs:o.rs||{},best:+o.best||0,rev:+o.rev||0}};
+const ytId=u=>(String(u||'').match(/(?:[?&]v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/)||[])[1]||'';
+const plId=u=>(String(u||'').match(/[?&]list=([\w-]+)/)||[])[1]||'';
+const DEFVIDS=[{name:'Hockey Workout videos',url:'https://www.youtube.com/playlist?list=PLKUrliHdTpU4',min:20},{name:'Stick Handling videos',url:'https://www.youtube.com/playlist?list=PLWDK_MTHIZtE',min:10}];
+const BALL='Stick + ball',NET='Stick + ball + net',LEFTY='He shoots left: right hand on top of the stick, left hand lower down.';
+const d=(cat,name,anim,secs,reps,sw,need,steps,tip)=>({cat,name,anim,secs,reps,sw,need,steps,tip});
+const BUILT=[
+d('warm','Jumping jacks','jacks',30,0,0,'',['Feet together, arms down.','Jump out wide, hands up high!','Jump back in. Keep going!'],'Count them out loud together.'),
+d('warm','High knees','knees',30,0,0,'',['Run on the spot.','Bring knees up to your belly.','Pump your arms like a fast skater.'],'Quick and light on the toes.'),
+d('warm','Arm circles','circles',30,0,1,'',['Arms out like airplane wings.','Make small circles forward.','Switch! Circles backward.'],'Loosens up shoulders for shooting.'),
+d('warm','Toy soldier kicks','kick',30,0,0,'',['Stand tall like a soldier.','Kick one straight leg up.','Touch your toes with the other hand.'],'Keep the kicking leg straight.'),
+d('stick','Side-to-side dribble','dribble',45,0,0,BALL,['Ball in front of your toes.','Push it left, then right, then left.','Quiet taps — soft hands!'],LEFTY),
+d('stick','Front-to-back','frontback',45,0,0,BALL,['Ball beside your front foot.','Pull it toward you, push it away.','Keep the blade on top of the ball.'],'Elbows away from the body so the stick can move.'),
+d('stick','Figure 8','weave',60,0,0,BALL,['Put two shoes or cups on the floor.','Dribble the ball around them in an 8.','Go slow first, then faster!'],'Lift the eyes between cups when he can.'),
+d('stick','Eyes up! Finger count','eyes',60,0,0,BALL,['Dribble side to side.','Grown-up holds up fingers.','Shout the number — without looking down!'],'Change fingers every few seconds. This builds heads-up hockey.'),
+d('stick','Toe drag','toedrag',45,0,0,BALL,['Ball out wide on your forehand side.','Turn the blade and pull the ball in with the toe.','Push it back out and do it again.'],'Slow and tidy beats fast and messy.'),
+d('stick','Cup obstacle course','course',60,0,0,BALL,['Line up 4 or 5 cups in a row.','Weave the ball in and out.','Come back the other way!'],'Time him and try to beat it next day.'),
+d('stick','One hand challenge','onehand',40,0,1,BALL,['Top hand only on the stick.','Tap the ball side to side.','Switch! Both hands again, fast.'],'Builds top-hand control (his right hand).'),
+d('shoot','Wrist shots','shoot',0,10,0,NET,['Ball beside your back foot.','Sweep it forward and flick!','Point the stick at the target when you finish.'],'Lefty: the ball starts by his left side; weight moves from back foot to front foot.'),
+d('shoot','Pick the corners','corners',0,8,0,NET,['Tape 4 targets in the net corners.','Grown-up calls a corner.','Shoot for it! Tap the puck for each shot.'],'Cheer every hit — accuracy over power at this age.'),
+d('shoot','Backhand flips','shoot',0,8,0,NET,['Ball on your backhand side.','Cup the ball with the blade.','Lift and flip it toward the net.'],'Backhands are hard — any lift is a win.'),
+d('shoot','Dribble & shoot','corners',0,6,0,NET,['Start far from the net.','Dribble 3 side-to-side taps.','Then shoot! Get the ball and go again.'],'Hands plus shooting, like a real rush.'),
+d('legs','Skater hops','hops',30,0,0,'',['Jump sideways onto one foot.','Land soft, hold for a second.','Jump back the other way.'],'Like a skating stride, side to side.'),
+d('legs','Superhero skater pose','ready',20,0,1,'',['Knees bent, chest up, hands on knees.','Hold it like a hockey player ready for the puck.','Switch! Now try it on one leg.'],'Hold time grows as he gets stronger.'),
+d('legs','Duck walk','duck',30,0,0,'',['Squat down low.','Toes pointed out like a duck.','Waddle forward! Quack optional.'],'Builds the same muscles as skating.'),
+d('legs','Quick feet','quick',20,0,0,'',['Feet apart, knees bent.','Tap your feet super fast.','Grown-up says GO — sprint 3 steps!'],'Great for fast starts.'),
+d('power','Bear crawl','bear',30,0,0,'',['Hands and feet on the floor, bottom up.','Walk forward like a bear.','Go backward too!'],'Back flat, knees off the floor.'),
+d('power','Crab walk','crab',30,0,0,'',['Sit, hands behind you, feet flat.','Lift your bottom up.','Walk like a crab!'],'Strong arms for battles in the corner.'),
+d('power','Frog jumps','frog',0,8,0,'',['Squat down, hands on the floor.','Jump forward as far as you can!','Land soft like a frog. Tap the puck each jump.'],'Soft landings, knees over toes.'),
+d('power','Hockey stick plank','plank',20,0,0,'',['Lie on your tummy.','Push up on your elbows and toes.','Be straight as a hockey stick!'],"Start with 10–20 seconds. That's plenty at 5."),
+d('power','Invisible chair','wall',20,0,0,'',['Back flat against a wall.','Slide down like sitting in a chair.','Hold it! Is the chair still there?'],'Short holds only; stop if it hurts.'),
+d('power','Superman','superman',20,0,0,'',['Lie on your tummy.','Lift arms and legs off the floor.','Fly, Superman, fly!'],'A strong back helps skating posture.'),
+d('bal','Flamingo stand','flamingo',30,0,1,'',['Stand on one foot.','Arms out, look straight ahead.','Switch! Other foot now.'],'Harder: close the eyes for 5 seconds.'),
+d('bal','Line hops','linehop',30,0,0,'',['Find a line (tape or a stick on the floor).','Hop over and back, over and back.','Light, quick feet!'],'Like a squirrel — quick and light.'),
+d('bal','Hot lava','lava',45,0,0,'',['Put pillows on the floor as islands.','The floor is lava!','Hop island to island without touching.'],'Great for agility and a guaranteed favourite.'),
+d('bal','Stop & go','stopgo',40,0,0,'',['Grown-up says GO — run on the spot.','STOP — freeze like a statue!','Try not to wobble.'],'Mix up the timing to keep him guessing.'),
+d('cool','Big stretch','stretch',30,0,0,'',['Reach up high to the sky.','Now fold down and touch your toes.','Slow, big breaths.'],'Nice and calm to finish.'),
+d('cool','Butterfly stretch','butterfly',30,0,0,'',['Sit, bottoms of feet together.','Gently flap your knees.','Breathe in, breathe out.'],'Good for skating hips.'),
+d('cool','Arm & neck stretch','armstretch',30,0,1,'',['Pull one arm across your chest.','Hold for the count.','Switch! Other arm now.'],'Finish with a high five.'),
+/* from his Stickhandling Practice sheet (b32–b39) */
+d('stick','One Hand Front Handles','onehandF',0,10,0,'Stick + puck',['Top hand only on the stick.','Puck in front of you.','Move it side to side.'],'Top hand is his right hand (he shoots left).'),
+d('stick','One Hand Side Handles','onehandS',0,10,0,'Stick + puck',['Top hand only on the stick.','Puck at your side.','Move it front and back.'],'Keep the puck close to the body.'),
+d('stick','2 Hands Front Handles','twoF',0,10,0,'Stick + puck',['Two hands on the stick.','Puck in front of you.','Side to side — soft hands!'],LEFTY),
+d('stick','2 Hands Side Handles','twoS',0,10,0,'Stick + puck',['Two hands on the stick.','Puck at your side.','Move it front and back.'],'Bottom hand slides down the stick to help.'),
+d('stick','Front Handles Wide Toe to Toe','wide',0,10,0,'Stick + puck',['Face forward, feet wide.','Take the puck to one toe…','…then all the way to the other toe!'],'Big wide reach — stretch those arms.'),
+d('stick','X to X Stick Handles','xtox',45,0,0,'Stick + puck + 5 X marks',['Set out 5 X marks numbered 1 to 5.','Out: 1→2→1→3→2→4→3→5','Back: 5→4→5→3→4→2→3→1→2→1'],'Tape X marks on the floor like the picture on his sheet.'),
+d('stick','Figure 8','fig8',0,10,0,'Stick + puck + 2 pucks',['Place 2 pucks on the floor.','Go around them in an 8.','Keep the puck on your blade.'],'Count one for every full 8.'),
+d('stick','Passer Passes','passer',0,10,0,'Stick + puck + passer',['Stand in front of the passer.','Pass the puck into it.','Catch it soft on your blade.'],'Soft catch: let the blade give a little when the puck comes back.'),
+/* from his Workout sheet (b40–b47) */
+d('legs','Bunny Hops','bunny',0,10,0,'',['Feet together.','Hop over the line…','…and back!'],'Land soft on the balls of the feet.'),
+d('legs','Skater Side Hops','hops',0,10,0,'Stick on the floor',['Lay your stick on the floor.','Jump side to side over it like skating.','Land on one leg.'],'Hold each landing for a second.'),
+d('power','Lunges','lunge',0,5,1,'',['Take a big step.','Back knee goes down.','Stand up. Switch legs after 5!'],'Front knee stays over the ankle.'),
+d('power','Weight Squats','squatW',0,10,0,'Light weight',['Hold the weight at your chest.','Sit back like a chair.','Stand up tall.'],'Chest up, heels down.'),
+d('power','Weight Twists','twist',0,10,0,'Light weight',['Sit, knees bent, lean back a little.','Hold the weight.','Turn it side to side.'],'Slow twists, not fast.'),
+d('power','Weight Press','press',0,10,0,'Light weights',['Weights at your shoulders.','Push them up to the sky!','Bring them down slow.'],'Light weights only.'),
+d('power','Bear Crawl (there & back)','bear',0,1,0,'',['Hands and feet, knees up.','Crawl to the other side…','…and back!'],'Back flat like a table.'),
+d('power','Push Ups','pushup',0,5,0,'',['Body straight like a hockey stick.','Chest down, push up.','Too hard? Use your knees.'],'Knee push ups count too!')
+].map((x,i)=>({...x,id:'b'+i,sw:!!x.sw,pin:i>=32&&i<=39,unit:{42:'each leg',46:'trip'}[i]||''}));
+const RBUILT=[
+{id:'r-stick',name:'Stickhandling Practice',cat:'stick',rounds:2,water:true,warm:[],main:['b32','b33','b34','b35','b36','b37','b38','b39'],cool:[],finish:'Shoot and score! One shot into the net to end practice.'},
+{id:'r-workout',name:'Workout',cat:'power',rounds:2,water:true,warm:['b1','b2'],main:['b40','b41','b42','b43','b44','b45','b46','b47'],cool:['b29','b30'],finish:''}];
+const cat=id=>CATS.find(c=>c.id===id)||CATS[1];
+function norm(o,id){const n=v=>Math.max(0,Math.min(600,Math.round(+v||0)));return{id,name:String(o.name||'New drill').slice(0,60),cat:CATS.some(c=>c.id===o.cat)?o.cat:'stick',anim:M[o.anim]?o.anim:'jacks',secs:n(o.secs),reps:Math.min(99,n(o.reps)),sw:!!o.sw,need:String(o.need||'').slice(0,40),steps:(Array.isArray(o.steps)?o.steps:[]).map(String).filter(Boolean).slice(0,8),tip:String(o.tip||'').slice(0,300),yt:ytOk(o.yt)?String(o.yt):'',unit:String(o.unit||'').slice(0,20),cnt:o.cnt==='tap'||o.cnt==='voice'?o.cnt:(o.cat==='stick'?'voice':'tap'),vid:typeof o.vid==='string'?o.vid:'',vloc:typeof o.vloc==='string'?o.vloc:'',pin:!!o.pin,hidden:!!o.hidden}}
+
+/* ---------- storage: synced to Claude account when available, iPad copy always ---------- */
+let OV=LS.get('ehc-ov',{}),SET=LS.get('ehc-set2',{mix:{...DEFMIX},autoVid:true,beat:1.4,vids:DEFVIDS}),P=fixP(LS.get('elias-hockey-camp',{}));
+SET.rw=normRW(SET.rw);if(!SET.mix)SET.mix={...DEFMIX};if(!Array.isArray(SET.vids))SET.vids=DEFVIDS;if(!SET.beat)SET.beat=1.4;
+let DB=null,AS=null,sync='Saved on this iPad',wq=Promise.resolve();
+const put=(path,v)=>{if(!DB)return;wq=wq.then(()=>DB.doc(path).set(v)).catch(()=>{sync='Could not save to your account — kept on this iPad';})};
+const del=path=>{if(!DB)return;wq=wq.then(()=>DB.doc(path).delete()).catch(()=>{})};
+function all(){const out=BUILT.map(b=>OV[b.id]?{...norm({...b,...OV[b.id]},b.id),base:1,edited:1}:{...norm(b,b.id),base:1});for(const id in OV)if(id[0]==='c')out.push(norm(OV[id],id));return out}
+const live=()=>all().filter(x=>!x.hidden);
+const byId=id=>all().find(x=>x.id===id);
+let ROV=LS.get('ehc-rov',{});
+const ids=a=>(Array.isArray(a)?a:[]).filter(x=>typeof x==='string').slice(0,30);
+const normR=(o,id)=>({id,name:String(o.name||'New routine').slice(0,50),cat:CATS.some(c=>c.id===o.cat)?o.cat:'stick',rounds:Math.max(1,Math.min(4,Math.round(+o.rounds||1))),water:!!o.water,warm:ids(o.warm),main:ids(o.main),cool:ids(o.cool),finish:String(o.finish||'').slice(0,160)});
+function routines(){const out=RBUILT.map(r=>ROV[r.id]?{...normR({...r,...ROV[r.id]},r.id),base:1,edited:1}:{...normR(r,r.id),base:1});for(const id in ROV)if(id.startsWith('rc'))out.push(normR(ROV[id],id));return out}
+const rById=id=>routines().find(r=>r.id===id);
+function soft(){if(['drill','edit','redit','water','finish'].includes(S.view))return;render(true)}
+/* standalone version: everything is saved on this iPad */
+const saveP=()=>{P.rev=(P.rev||0)+1;LS.set('elias-hockey-camp',P);put('camp/progress',P)};
+const saveSET=()=>{LS.set('ehc-set2',SET);put('camp/settings2',SET)};
+/* local video store for big clips: lives on this iPad, plays without streaming */
+const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open('ehc-videos',1);r.onupgradeneeded=()=>r.result.createObjectStore('v');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+const vop=(mode,fn)=>idb().then(db=>new Promise((res,rej)=>{const tx=db.transaction('v',mode),q=fn(tx.objectStore('v'));tx.oncomplete=()=>res(q&&q.result);tx.onerror=()=>rej(tx.error)}));
+const vput=(k,b)=>vop('readwrite',s=>s.put(b,k)),vget=k=>vop('readonly',s=>s.get(k)),vdel=k=>vop('readwrite',s=>s.delete(k));
+
+/* ---------- app state ---------- */
+const app=document.getElementById('app'),sc=document.getElementById('sc');
+let S={view:'home',cat:null,d:null,q:null,qi:0,earned:0,edit:null,wipe:0},T={left:0,run:false,id:0,reps:0,half:false};
+function mkPlan(){const L=live();return CATS.flatMap(c=>{const n=Math.max(0,Math.min(5,+SET.mix[c.id]||0)),pool=L.filter(x=>x.cat===c.id),pin=pool.filter(x=>x.pin),rest=pool.filter(x=>!x.pin).sort(()=>Math.random()-.5);return[...pin,...rest].slice(0,Math.max(n,pin.length))})}
+let plan=mkPlan();
+const mins=p=>Math.max(1,Math.round(p.reduce((t,x)=>t+(x.secs||target(x)*(x.cnt==='voice'?SET.beat:5)||45)+12,0)/60));
+let AC;
+const beep=(f=880,l=.12)=>{try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;o.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(.25,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+l);o.start();o.stop(AC.currentTime+l)}catch(e){}};
+const say=t=>{try{const u=new SpeechSynthesisUtterance(t);u.rate=1.05;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}};
+function stop(){clearInterval(T.id);T.run=false}
+const target=x=>x.reps*(x.sw?2:1);
+function buildQ(r){const g=id=>{const x=byId(id);return x&&!x.hidden?x:null},q=[],m=r.main.map(g).filter(Boolean);
+  r.warm.map(g).filter(Boolean).forEach(d=>q.push({kind:'drill',d,label:'Warm up'}));
+  for(let i=1;i<=r.rounds;i++){if(i>1&&r.water)q.push({kind:'water',round:i,label:'Water break'});m.forEach((d,j)=>q.push({kind:'drill',d,label:`Round ${i} of ${r.rounds} · Drill ${j+1} of ${m.length}`}))}
+  r.cool.map(g).filter(Boolean).forEach(d=>q.push({kind:'drill',d,label:'Cool down'}));
+  if(r.finish)q.push({kind:'finish',text:r.finish,label:'Finish'});return q}
+const qMix=()=>plan.map((d,j)=>({kind:'drill',d,label:`Drill ${j+1} of ${plan.length}`}));
+function runQ(q,name,rid,long){S.rid=rid||null;S.long=!!long;if(!q.some(x=>x.kind==='drill')){toast('No drills in this routine yet — add some in Coach Corner.');return}beep(660);S.q=q;S.qi=0;S.earned=0;S.rname=name;step();say(`Let's go Elias! ${name}. First up, ${q.find(x=>x.kind==='drill').d.name}`)}
+function step(){const it=S.q[S.qi];if(it.kind==='drill')openDrill(it.d);else{S.view=it.kind;render();if(it.kind==='water'){beep(520,.4);say('Water break! Grab a drink.')}else say(it.text)}}
+const qbar=()=>{const q=S.q;return `<div class="row" style="justify-content:space-between"><button class="back" data-a="quit">✕ End</button><span style="font-weight:800;align-self:center;text-align:right">${esc(S.rname)}<br><span style="color:var(--mute)">${esc(q[S.qi].label)}</span></span></div><div class="bar"><i style="width:${S.qi/q.length*100}%"></i></div>`};
+const meta=x=>`${x.reps?x.reps+' '+esc(x.unit||'reps'):x.secs+' seconds'}${x.sw?' · both sides':''}${x.need?' · '+esc(x.need):''}`;
+const hasVid=x=>x.vid||x.vloc;
+
+/* ---------- views ---------- */
+function home(){
+  if(!plan.length||plan.some(x=>!byId(x.id)))plan=mkPlan();
+  const L=live(),days=[...Array(7)].map((_,i)=>{const t=new Date();t.setDate(t.getDate()-6+i);return t});
+  const R=routines(),nm=r=>r.main.map(byId).filter(x=>x&&!x.hidden),grp=plan.reduce((o,x)=>{const g=x.cat==='stick'?'stick':x.cat==='warm'?'warm':x.cat==='cool'?'cool':'extra';(o[g]=o[g]||[]).push(x);return o},{});
+  const card=r=>{const c=cat(r.cat),f=nm(r)[0];return `<button class="tile" style="--c:${c.c}" data-a="routine" data-v="${r.id}">${still(f?f.anim:c.a,'#ffffff40')}<div><b>${esc(r.name)}</b><br><small>${nm(r).length} drills${r.rounds>1?` × ${r.rounds} rounds`:''}${r.warm.length?' · warm-up':''}${r.cool.length?' · cool-down':''}</small></div></button>`};
+  const vcard=(v,i)=>{const lib=VLIB[plId(v.url)];if(lib)return `<button class="tile vtile" style="--c:#cc0000" data-a="pl" data-v="${i}"><span class="vstack">${lib.slice(0,3).map(x=>`<img src="thumbs/${x[0]}.jpg" alt="">`).join('')}</span><div><b>${esc(v.name)}</b><br><small>${lib.length} videos · pick one and follow along</small></div></button>`;const vid=ytId(v.url);return ytOk(v.url)?`<button class="tile" style="--c:#cc0000" data-a="yt" data-v="${i}">${vid?`<span class="vstack"><img src="https://i.ytimg.com/vi/${vid}/mqdefault.jpg" alt=""></span>`:`<svg viewBox="0 0 96 77" aria-hidden="true"><rect x="10" y="14" width="76" height="50" rx="14" fill="#fff"/><path d="M40 27v24l20-12z" fill="#cc0000"/></svg>`}<div><b>${esc(v.name)}</b><br><small>Follow along${v.min?` · about ${v.min} min`:''}</small></div></button>`:''};
+  const sec=(t,arr)=>arr&&arr.length?`<li style="margin-top:6px;color:var(--mute);font-size:14px;font-weight:800">${t}</li>${arr.map(x=>`<li><span class="dot" style="background:${cat(x.cat).c}"></span>${esc(x.name)}</li>`).join('')}`:'';
+  const LV=level(),pct=LV.next?Math.round((P.total-LV.cur.at)/(LV.next.at-LV.cur.at)*100):100,st=streak();
+  const strip=`<button class="rstrip" data-a="rw">${jersey(LV,64)}<div style="flex:1"><b style="color:${LV.c}">${esc(LV.cur.name)}</b><div class="bar" style="max-width:360px"><i style="width:${pct}%;background:${LV.c}"></i></div><small>${LV.next?`${LV.next.at-P.total} stars to ${esc(LV.next.name)}`:'Top level!'}</small></div><span class="pill"><span>★ ${P.stars}</span>${st?`<span>🔥 ${st} day${st>1?'s':''}</span>`:''}${SET.rw.wgoal?`<span>This week ${Math.min(weekCount(),SET.rw.wgoal)}/${SET.rw.wgoal}</span>`:''}</span></button>`;
+  return `${strip}<section class="hero"><div><h2>Ready to train, Elias?</h2><p>Today's workout: ${plan.length} drills, about ${mins(plan)} minutes. The app counts and moves on by itself — just follow along!</p><button class="go" data-a="start" ${plan.length?'':'disabled'}>▶ Start workout</button><button class="link" data-a="shuffle">Shuffle the extras</button></div>
+  <div><ul class="plan">${sec('Warm up',grp.warm)}${sec('Stickhandling',grp.stick)}${sec('Extras',grp.extra)}${sec('Cool down',grp.cool)}</ul></div></section>
+  <h3 class="sec">More training</h3><div class="grid">${R.map(card).join('')}${(SET.vids||[]).map(vcard).join('')}</div>
+  <h3 class="sec">Pick a drill</h3><div class="grid">${CATS.map(c=>`<button class="tile" style="--c:${c.c}" data-a="cat" data-v="${c.id}">${still(c.a,'#ffffff40')}<div><b>${c.name}</b><br><small>${c.b} · ${L.filter(x=>x.cat===c.id).length} drills</small></div></button>`).join('')}</div>
+  <h3 class="sec">My week</h3><div class="week">${days.map(t=>{const s=dstr(t),n=P.days[s]||0;return `<div class="day${n?' on':''}${s===today()?' today':''}"><div>${t.toLocaleDateString('en-CA',{weekday:'short'})}</div><div class="s">${P.full[s]?'🏆':'★'}</div><div>${n||''}</div></div>`}).join('')}</div>
+  <details><summary>Notes for the grown-up</summary><ul>
+  <li>Built for a 5-year-old: short, playful, bodyweight only. 10–15 minutes is plenty — stop while it's still fun.</li>
+  <li>Press and hold <b>Coach</b> (top right) to add or change drills, attach videos and change the workout mix.</li>
+  <li>Stickhandling drills are counted out loud by the app, so he never has to stop. Change the counting speed in Coach Corner.</li><li>YouTube videos play right inside the app (they need internet). Tapping Done after 1+ minute asks if he finished — that counts as a workout. Everything else works with no internet.</li><li>Everything saves on this iPad only. Use Back up in Coach Corner if you ever switch devices.</li><li>Stars are given for finishing whole sessions. Tap the star counter or the level bar to see prizes and badges.</li>
+  <li>Keep weights light. Stop if anything hurts.</li></ul></details>`}
+function catView(){const c=cat(S.cat);
+  return `<button class="back" data-a="home">← Back</button><h2 class="pname" style="--c:${c.c};margin-top:18px">${c.name}</h2>
+  <div class="list">${live().filter(x=>x.cat===c.id).map(x=>`<button class="drill" style="--c:${c.c}" data-a="drill" data-v="${x.id}">${still(x.anim,c.c)}<div><b>${esc(x.name)}</b><span>${meta(x)}${hasVid(x)?' · video':''}</span></div><span class="g">▶</span></button>`).join('')||'<p class="note">No drills here yet — add some in Coach Corner.</p>'}</div>`}
+function drillView(){const x=S.d,c=cat(x.cat),q=S.q;
+  const voice=x.reps&&x.cnt==='voice';
+  const meter=x.reps&&!voice?`<button class="puck" data-a="rep" aria-label="Count one rep"><div>${T.reps}<small>of ${target(x)} · tap!</small></div></button>`
+  :`<div class="ring"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="88" fill="none" stroke="var(--line)" stroke-width="18"/><circle id="arc" cx="100" cy="100" r="88" fill="none" stroke="${c.c}" stroke-width="18" stroke-linecap="round" stroke-dasharray="553" stroke-dashoffset="0"/></svg><div class="n"><div><span id="tl">${voice?0:T.left}</span><small id="tm">${voice?'of '+target(x):'seconds'}</small></div></div></div>
+  <div class="row"><button class="btn" id="go" data-a="go" style="background:${c.c}">Start</button><button class="btn alt" data-a="again">Restart</button></div>`;
+  const media=(hasVid(x)?`<button class="btn vid" data-a="video">▶ Watch how</button>`:'')+(x.yt?`<button class="btn yt" data-a="dyt">▶ YouTube</button>`:'');
+  return `${q?qbar():'<button class="back" data-a="back">← Back</button>'}
+  <div class="play" style="--c:${c.c}"><div><h2 class="pname">${esc(x.name)}</h2>${x.need?`<span class="need">${esc(x.need)}</span>`:''}
+  <div class="figbox"><svg viewBox="0 0 200 160" data-anim="${x.anim}" data-c="${c.c}" ${x.sw?'data-mir="1"':''} role="img" aria-label="Animation of ${esc(x.name)}"></svg></div>
+  <ol class="steps">${x.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>${x.tip?`<div class="tip"><b>Coach tip:</b> ${esc(x.tip)}</div>`:''}</div>
+  <div class="meter">${media?`<div class="row">${media}</div>`:''}${meter}<div class="row"><button class="btn done" data-a="done">★ I did it!</button>${q?'<button class="btn alt" data-a="skip">Skip</button>':''}</div>${voice?'<p class="note" style="margin:0;text-align:center">The app counts out loud — move the puck on every number!</p>':''}</div></div>`}
+function rwView(){const L=level(),R=SET.rw,st=streak(),pend=P.claims.filter(c=>c.st==='pending'),pct=L.next?Math.round((P.total-L.cur.at)/(L.next.at-L.cur.at)*100):100,prizes=[...R.prizes].map((z,i)=>({...z,i})).sort((a,b)=>a.cost-b.cost);
+  return `<button class="back" data-a="home">← Back</button>
+  <section class="hero" style="margin-top:16px"><div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">${jersey(L,120)}<div style="flex:1;min-width:200px"><h2 style="color:${L.c}">${esc(L.cur.name)}</h2><p style="margin:6px 0">${L.next?`${L.next.at-P.total} more stars to <b>${esc(L.next.name)}</b>`:'Top level — you are a legend!'}</p><div class="bar"><i style="width:${pct}%;background:${L.c}"></i></div></div></div>
+  <div style="display:grid;gap:10px">
+  <div class="mixrow" style="font-size:19px"><span style="color:var(--gold);font-size:26px">★</span><span class="nm">Stars to spend</span><b>${P.stars}</b></div>
+  <div class="mixrow" style="font-size:19px"><span style="font-size:22px">🔥</span><span class="nm">Days in a row</span><b>${st}</b></div>
+  ${R.wgoal?`<div class="mixrow" style="font-size:19px"><span style="font-size:22px">📅</span><span class="nm">This week's goal</span><b>${Math.min(weekCount(),R.wgoal)} of ${R.wgoal}</b></div>`:''}
+  <div class="mixrow" style="font-size:19px"><span style="font-size:22px">🏒</span><span class="nm">Workouts done</span><b>${P.n}</b></div></div></section>
+  <h3 class="sec">Prize shop</h3><div class="list">${prizes.map(z=>{const ok=P.stars>=z.cost,pd=pend.some(c=>c.name===z.name);return `<div class="prize"><div style="flex:1"><b>${esc(z.name)}</b><span>${z.cost} ★ · ${ok?'you have enough!':`${z.cost-P.stars} more to go`}</span><div class="bar" style="margin:8px 0 0"><i style="width:${Math.min(100,P.stars/z.cost*100)}%"></i></div></div>${pd?'<span class="chip" style="font-size:14px">Waiting for a grown-up</span>':`<button class="sbtn" data-a="claim" data-v="${z.i}" ${ok?'':'disabled style="opacity:.35"'}>Get it!</button>`}</div>`}).join('')||'<p class="note">No prizes yet — ask a grown-up to add some in Coach Corner.</p>'}</div>
+  <h3 class="sec">Trophy case</h3><div class="grid">${BADGES.map(([id,name,how])=>`<div class="badge${P.bd[id]?'':' off'}"><div class="ic">${P.bd[id]?'🏅':'🔒'}</div><b>${esc(name)}</b><small>${esc(how)}</small></div>`).join('')}</div>`}
+function plView(){const v=SET.vids[S.pl]||{},lib=VLIB[plId(v.url)]||[],pid=plId(v.url),W=P.vw||{};
+  const link=id=>`https://www.youtube.com/watch?v=${id}${pid?'&list='+pid:''}`;
+  return `<div class="row" style="justify-content:space-between"><button class="back" data-a="home">← Back</button>${lib.length?'<button class="sbtn" data-a="surprise" style="min-height:56px;font-size:18px">Surprise me!</button>':''}</div>
+  <h2 class="pname" style="--c:#cc0000;margin:18px 0 6px">${esc(v.name||'Videos')}</h2><p class="note">Tap a video to watch and follow along. When you're done, tap Done to get your stars!</p>
+  <div class="vgrid">${lib.map((x,i)=>`<button class="vcard" data-a="ytv" data-v="${i}" id="v-${i}" style="text-align:left;padding:0"><div class="th"><img src="thumbs/${x[0]}.jpg" alt="" loading="lazy"><span class="len">${x[2]}</span>${W[x[0]]?'<span class="ok">✓ Done</span>':''}</div><div class="tx"><b>${esc(x[1])}</b><small>${esc(x[3])}</small></div></button>`).join('')}</div>
+  ${pid?`<p style="margin-top:20px"><button class="link" data-a="plall">Play the whole playlist</button></p>`:''}`}
+const DROP='<svg viewBox="0 0 100 120" width="120" height="144" aria-hidden="true"><path d="M50 6C36 30 16 52 16 76a34 34 0 0 0 68 0C84 52 64 30 50 6z" fill="#4fa3ff"/><path d="M34 78a16 16 0 0 0 14 18" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round"/></svg>';
+function waterView(){const it=S.q[S.qi];return `${qbar()}<div class="panel" style="text-align:center;padding:36px 20px">${DROP}<h2 class="pname" style="--c:var(--blue);margin:10px 0">Water break!</h2><p style="font-size:22px;font-weight:800;margin:0 0 22px">Round ${it.round-1} done. Grab a drink, then start again at 1.</p><button class="go" data-a="next" style="max-width:440px">Start Round ${it.round}</button></div>`}
+function finishView(){const it=S.q[S.qi];return `${qbar()}<div class="panel" style="text-align:center;padding:36px 20px;border:6px solid var(--red)"><div style="font-size:90px;line-height:1;color:var(--gold)">★</div><h2 class="pname" style="--c:var(--red);margin:10px 0">Finish!</h2><p style="font-size:24px;font-weight:800;margin:0 0 22px">${esc(it.text)}</p><button class="go" data-a="next" style="max-width:440px">I did it!</button></div>`}
+function reditView(){const r=S.redit,isC=r.id.startsWith('rc'),L=live();
+  const opts=`<option value="">+ Add a drill…</option>${CATS.map(c=>`<optgroup label="${c.name}">${L.filter(x=>x.cat===c.id).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</optgroup>`).join('')}`;
+  const sec=(key,title,note)=>`<div class="panel"><h3>${title}</h3><p class="note">${note}</p>${r[key].map((id,i)=>{const x=byId(id);return `<div class="crow">${x?still(x.anim,cat(x.cat).c):''}<div class="nm">${i+1}. ${x?esc(x.name):'(deleted drill)'}${x?`<br><span class="chip">${meta(x)}</span>`:''}</div><button class="step" data-a="rmove" data-l="${key}" data-v="${i}" data-d="-1" aria-label="Move up">↑</button><button class="step" data-a="rmove" data-l="${key}" data-v="${i}" data-d="1" aria-label="Move down">↓</button><button class="step" style="background:var(--red)" data-a="rrem" data-l="${key}" data-v="${i}" aria-label="Remove">✕</button></div>`}).join('')}<label class="fld" style="margin:10px 0 0"><select data-r="add" data-l="${key}" aria-label="Add a drill to ${title}">${opts}</select></label></div>`;
+  return `<div class="row" style="justify-content:space-between"><button class="back" data-a="coach">← Cancel</button><button class="sbtn" data-a="rsave">Save routine</button></div>
+  <div class="panel"><label class="fld">Routine name<input id="r-name" data-r="name" value="${esc(r.name)}" maxlength="50"></label>
+  <div class="two"><label class="fld">Colour<select data-r="cat">${CATS.map(c=>`<option value="${c.id}" ${c.id===r.cat?'selected':''}>${c.name}</option>`).join('')}</select></label>
+  <label class="fld">Rounds<select data-r="rounds">${[1,2,3,4].map(n=>`<option ${n===r.rounds?'selected':''}>${n}</option>`).join('')}</select></label></div>
+  <label class="chk"><input type="checkbox" data-r="water" ${r.water?'checked':''}> Water break between rounds</label>
+  <label class="fld" style="margin-top:10px">Finish (optional)<input data-r="finish" value="${esc(r.finish)}" placeholder="e.g. Shoot and score! One shot into the net." maxlength="160"></label>
+  <div class="row" style="justify-content:flex-start">${isC?'<button class="sbtn red" data-a="rdelete">Delete routine</button>':r.edited?'<button class="sbtn alt" data-a="rrestore">Restore original</button>':''}</div></div>
+  ${sec('warm','Warm-up','Done once at the start.')}${sec('main','Main drills','Done in this order, every round.')}${sec('cool','Cool-down','Done once at the end.')}`}
+function coachView(){const A=all();
+  return `<div class="row" style="justify-content:space-between"><button class="back" data-a="home">← Back to camp</button><button class="sbtn" data-a="new">+ New drill</button></div>
+  <h2 class="pname" style="--c:var(--blue);margin-top:16px">Coach Corner</h2><p class="note">${esc(sync)}</p>
+  ${rwCoach()}
+  <div class="panel"><div class="row" style="justify-content:space-between"><h3>Routines</h3><button class="sbtn" data-a="rnew">+ New routine</button></div><p class="note">The top routine on the home screen is Stickhandling Practice. Change the order of drills, the number of rounds, or build new routines.</p>
+  ${routines().map(r=>`<div class="crow"><span class="dot" style="background:${cat(r.cat).c};width:22px;height:22px"></span><div class="nm">${esc(r.name)}<br><span class="chip">${r.main.length} drills × ${r.rounds}</span>${r.base?'':'<span class="chip">Custom</span>'}${r.edited?'<span class="chip">Edited</span>':''}</div><button class="sbtn alt" data-a="redit" data-v="${r.id}">Edit</button></div>`).join('')}</div>
+  <div class="panel"><h3>Start workout mix</h3><p class="note">How many random drills from each group go into "Start workout". Pinned drills (his 8 sheet stickhandling drills) are always included, in order.</p>
+  <div class="mix">${CATS.map(c=>`<div class="mixrow"><span class="dot" style="background:${c.c}"></span><span class="nm">${c.name}</span><button class="step" data-a="mix" data-v="${c.id}" data-d="-1" aria-label="Fewer ${c.name}">−</button><output>${+SET.mix[c.id]||0}</output><button class="step" data-a="mix" data-v="${c.id}" data-d="1" aria-label="More ${c.name}">+</button></div>`).join('')}</div>
+  <label class="chk" style="margin-top:10px"><input type="checkbox" data-a="autovid" ${SET.autoVid?'checked':''}> Pop up the drill's video when a drill opens</label>
+  <label class="fld" style="max-width:340px;margin-top:8px">Stickhandling counting speed<select data-a="beat">${[[2,'Slow'],[1.4,'Medium'],[1,'Fast']].map(([v,n])=>`<option value="${v}" ${SET.beat===v?'selected':''}>${n}</option>`).join('')}</select></label></div>
+  <div class="panel"><h3>YouTube follow-along</h3><p class="note">Full sessions he follows along with. They play inside the app (internet needed); when he finishes, it counts as a workout. Paste a playlist or a single video link.</p>
+  ${SET.vids.map((v,i)=>`<div style="border-top:1px solid var(--line);padding-top:10px;margin-top:6px"><div class="two"><label class="fld">Name<input data-vi="${i}" data-vk="name" value="${esc(v.name)}" maxlength="50"></label><label class="fld">Minutes<input type="number" inputmode="numeric" data-vi="${i}" data-vk="min" value="${v.min||''}"></label></div>
+  <label class="fld">YouTube link${ytOk(v.url)?'':' <span class="chip">link not recognized</span>'}<input type="url" inputmode="url" data-vi="${i}" data-vk="url" value="${esc(v.url)}" placeholder="https://youtube.com/…"></label><button class="sbtn red" data-a="vdel" data-v="${i}">Remove</button></div>`).join('')}
+  <div class="row" style="justify-content:flex-start;margin-top:12px"><button class="sbtn" data-a="vadd">+ Add a video or playlist</button></div></div>
+  ${CATS.map(c=>`<div class="panel"><h3 style="color:${c.c}">${c.name}</h3>${A.filter(x=>x.cat===c.id).map(x=>`<div class="crow${x.hidden?' off':''}">${still(x.anim,c.c)}<div class="nm">${esc(x.name)}<br>${[x.id[0]==='c'?'Custom':x.edited?'Edited':'',x.pin?'Pinned':'',x.hidden?'Hidden':'',hasVid(x)?'Video':'',x.yt?'YouTube':''].filter(Boolean).map(t=>`<span class="chip">${t}</span>`).join('')}</div><button class="sbtn alt" data-a="edit" data-v="${x.id}">Edit</button></div>`).join('')}</div>`).join('')}
+`}
+function rwCoach(){const R=SET.rw,L=level(),num=(k,l)=>`<label class="fld">${l}<input type="number" inputmode="numeric" min="0" max="9999" data-rw="${k}" value="${R[k]}"></label>`,pend=P.claims.filter(c=>c.st==='pending');
+  return `<div class="panel"><h3>Rewards</h3><p class="note">Elias has <b>${P.stars}</b> stars to spend · ${P.total} earned all-time · level ${esc(L.cur.name)} · ${P.n} sessions finished.</p>
+  ${pend.length?`<div style="background:var(--field);border-radius:16px;padding:12px 14px;margin-bottom:12px"><b>Prizes waiting for you</b>${pend.map(c=>`<div class="crow"><div class="nm">${esc(c.name)} <span class="chip">${c.cost} ★ · ${c.d}</span></div><button class="sbtn" data-a="cgive" data-v="${c.id}">Given ✓</button><button class="sbtn alt" data-a="cno" data-v="${c.id}">Decline (refund)</button></div>`).join('')}</div>`:''}
+  <h3 style="font-size:21px;margin-top:6px">Stars</h3><div class="mix" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr));align-items:end">${num('session','Finishing a workout or video')}${num('long','Bonus: long session (2-round sheets, 20+ min videos)')}${num('drill','Single drill, or per drill if he stops early')}${num('s3','Bonus: 3 days in a row')}${num('s7','Bonus: 7 days in a row')}${num('wgoal','Weekly goal (sessions, 0 = off)')}${num('wbonus','Bonus: weekly goal reached')}</div>
+  <h3 style="font-size:21px;margin-top:16px">Prizes</h3>${R.prizes.map((z,i)=>`<div class="lrow"><label class="fld">Prize<input data-pz="${i}" data-pk="name" value="${esc(z.name)}" maxlength="50"></label><label class="fld">Stars<input type="number" inputmode="numeric" data-pz="${i}" data-pk="cost" value="${z.cost}"></label><button class="step" style="background:var(--red);height:48px;width:52px" data-a="pzdel" data-v="${i}" aria-label="Remove prize">✕</button></div>`).join('')}<button class="sbtn" data-a="pzadd" style="margin-top:6px">+ Add a prize</button>
+  <h3 style="font-size:21px;margin-top:16px">Levels</h3><p class="note">Based on all-time stars, so levels never go down when he spends stars.</p>${R.levels.map((z,i)=>`<div class="lrow"><label class="fld">Level ${i+1}<input data-lv="${i}" data-lk="name" value="${esc(z.name)}" maxlength="30"></label><label class="fld">From ★<input type="number" inputmode="numeric" data-lv="${i}" data-lk="at" value="${z.at}"></label>${i?`<button class="step" style="background:var(--red);height:48px;width:52px" data-a="lvdel" data-v="${i}" aria-label="Remove level">✕</button>`:'<span></span>'}</div>`).join('')}<button class="sbtn" data-a="lvadd" style="margin-top:6px">+ Add a level</button>
+  <h3 style="font-size:21px;margin-top:16px">Give or take stars</h3><p class="note">For extra effort, a great practice, or fixing a mistake.</p><div class="row" style="justify-content:flex-start;align-items:center"><input id="adj" type="number" inputmode="numeric" value="5" min="1" max="999" style="width:110px;font-size:18px;padding:10px;border-radius:12px;border:2px solid var(--line);background:var(--field)" aria-label="Number of stars"><button class="sbtn" data-a="adj" data-d="1">+ Give</button><button class="sbtn alt" data-a="adj" data-d="-1">− Take away</button></div>
+  <h3 style="font-size:21px;margin-top:16px">Back up</h3><p class="note">Everything is saved on this iPad. Save a backup file (drills, routines, rewards and stars — not your own video clips) before switching devices or clearing Safari.</p>
+  <div class="row" style="justify-content:flex-start"><button class="sbtn" data-a="backup">Save a backup file</button><label class="sbtn alt" style="display:inline-flex;align-items:center;cursor:pointer">Restore from backup<input type="file" accept=".json,application/json" id="restore" style="position:absolute;opacity:0;width:1px;height:1px"></label></div>
+  <div style="margin-top:18px"><button class="sbtn red" data-a="wipe">${S.wipe?'Tap again to reset ALL stars, levels and badges':'Reset all progress'}</button></div></div>`}
+function editView(){const e=S.edit,c=cat(e.cat),isC=e.id[0]==='c',yq='https://www.youtube.com/results?search_query='+encodeURIComponent((e.name||'')+' hockey drill for kids');
+  return `<div class="row" style="justify-content:space-between"><button class="back" data-a="coach">← Cancel</button><button class="sbtn" data-a="save">Save drill</button></div>
+  <div class="form"><div class="panel" style="margin:0">
+  <label class="fld">Drill name<input id="f-name" data-f="name" value="${esc(e.name)}" maxlength="60"></label>
+  <div class="two"><label class="fld">Group<select data-f="cat">${CATS.map(x=>`<option value="${x.id}" ${x.id===e.cat?'selected':''}>${x.name}</option>`).join('')}</select></label>
+  <label class="fld">Counts by<select data-f="mode"><option value="t" ${e.reps?'':'selected'}>Timer (seconds)</option><option value="v" ${e.reps&&e.cnt==='voice'?'selected':''}>Reps — app counts out loud</option><option value="r" ${e.reps&&e.cnt!=='voice'?'selected':''}>Reps — tap to count</option></select></label></div>
+  <div class="two"><label class="fld">${e.reps?'Reps':'Seconds'}<input type="number" inputmode="numeric" min="1" max="${e.reps?99:600}" data-f="amt" value="${e.reps||e.secs||30}"></label>
+  <label class="fld">Equipment<input data-f="need" value="${esc(e.need)}" placeholder="e.g. Stick + ball" maxlength="40"></label></div>
+  <label class="fld">Steps (one per line)<textarea data-f="steps">${esc(e.steps.join('\n'))}</textarea></label>
+  <label class="fld">Coach tip<textarea data-f="tip" style="min-height:80px">${esc(e.tip)}</textarea></label>
+  <label class="chk"><input type="checkbox" data-f="sw" ${e.sw?'checked':''}> Both sides (says "Switch!" halfway)</label>
+  <label class="chk"><input type="checkbox" data-f="pin" ${e.pin?'checked':''}> Pin — always in the workout</label>
+  <label class="chk"><input type="checkbox" data-f="hidden" ${e.hidden?'checked':''}> Hide from Elias</label>
+  <div class="row" style="justify-content:flex-start;margin-top:10px">${isC?'<button class="sbtn red" data-a="delete">Delete drill</button>':e.edited?'<button class="sbtn alt" data-a="restore">Restore original</button>':''}</div></div>
+  <div><div class="panel" style="margin:0"><h3>Animation</h3><div class="figbox" style="--c:${c.c};margin-top:6px"><svg viewBox="0 0 200 160" id="prev" data-anim="${e.anim}" data-c="${c.c}"></svg></div>
+  <label class="fld">Move<select data-f="anim">${Object.entries(M).map(([key,m])=>`<option value="${key}" ${key===e.anim?'selected':''}>${m.n}</option>`).join('')}</select></label></div>
+  <div class="panel"><h3>Follow-along video</h3>
+  <p class="note">Film yourself showing the drill, or pick a clip from Photos. Clips are saved on this iPad and play with no internet.</p>
+  <p class="vstat" id="vstat">${e.vid?'Video attached (synced).':e.vloc?'Video attached (on this iPad).':'No video yet.'}</p>
+  <div class="row" style="justify-content:flex-start"><label class="sbtn" style="display:inline-flex;align-items:center;cursor:pointer">${hasVid(e)?'Replace video':'Add video'}<input type="file" accept="video/*" data-f="file" style="position:absolute;opacity:0;width:1px;height:1px"></label>${hasVid(e)?'<button class="sbtn alt" data-a="evideo">Play</button><button class="sbtn alt" data-a="vremove">Remove</button>':''}</div>
+  <label class="fld" style="margin-top:14px">YouTube link<input type="url" data-f="yt" value="${esc(e.yt)}" placeholder="https://youtube.com/…" inputmode="url"></label>
+  <p class="note">Plays inside the app. <a href="${esc(yq)}" target="_blank" rel="noopener">Find one on YouTube</a>, copy its link and paste it here.</p></div></div></div>`}
+function render(keep){stop();sc.textContent=P.stars;const y=scrollY;
+  app.innerHTML={rw:rwView,pl:plView,home,cat:catView,drill:drillView,coach:coachView,edit:editView,redit:reditView,water:waterView,finish:finishView}[S.view]();
+  if(keep)scrollTo(0,y);else scrollTo(0,0);
+  if(S.view==='drill'&&!S.d.reps)paint();startAnims()}
+
+/* ---------- drill play ---------- */
+const isVoice=x=>x.reps&&x.cnt==='voice',isAuto=x=>!x.reps||isVoice(x);
+function openDrill(x){stop();S.d=x;T={left:x.secs,run:false,id:0,reps:0,cnt:0,half:false,ready:0,done:false};S.view='drill';render();
+  if(SET.autoVid&&hasVid(x))playVideo(x,autoGo);else autoGo()}
+function autoGo(){if(S.view==='drill'&&S.q&&isAuto(S.d)&&!T.run&&!T.ready)getReady()}
+function getReady(){const x=S.d;stop();T.ready=5;T.run=true;say(`${S.q?'Next up: ':''}${x.name}. Get ready!`);paint();
+  T.id=setInterval(()=>{T.ready--;if(T.ready<=3&&T.ready>0){beep(660);say(String(T.ready))}
+    if(T.ready<=0){clearInterval(T.id);T.ready=0;T.run=false;beep(1100,.25);say('Go!');begin()}else paint()},1000)}
+function begin(){const x=S.d;T.run=true;if(isVoice(x)){T.id=setInterval(countTick,SET.beat*1000)}else T.id=setInterval(tick,1000);paint()}
+function countTick(){const x=S.d,n=target(x);T.cnt++;beep(T.cnt>=n?1320:760,.08);
+  if(x.sw&&T.cnt===x.reps&&T.cnt<n){T.half=true;say(T.cnt+'. Switch!')}else say(String(T.cnt));
+  if(T.cnt>=n){stop();setTimeout(()=>say('Great job!'),500);autoDone()}paint()}
+function paint(){const a=document.getElementById('arc');if(!a)return;const x=S.d,v=isVoice(x),g=document.getElementById('go'),l=document.getElementById('tl'),m=document.getElementById('tm');
+  if(T.ready){a.style.strokeDashoffset=553*(1-T.ready/5);l.textContent=T.ready;m.textContent='get ready!';g.textContent='Pause';return}
+  if(v){const n=target(x);a.style.strokeDashoffset=553*(1-T.cnt/n);l.textContent=T.cnt;m.textContent=T.run?(T.half?'other side! of '+n:'of '+n):(T.cnt>=n?'done!':'of '+n);g.textContent=T.run?'Pause':(T.cnt>=n?'Again':T.cnt?'Keep going':'Start')}
+  else{a.style.strokeDashoffset=553*(1-T.left/x.secs);l.textContent=T.left;m.textContent=T.run?(T.half?'other side!':'GO!'):(T.left===0?'done!':'seconds');g.textContent=T.run?'Pause':(T.left===0?'Again':'Start')}}
+function tick(){T.left--;const x=S.d;
+  if(x.sw&&!T.half&&T.left<=Math.floor(x.secs/2)){T.half=true;beep(660,.3);say('Switch!')}
+  if(T.left>0&&T.left<=3)beep(880);
+  if(T.left<=0){T.left=0;stop();beep(1320,.5);say('Great job!');autoDone()}
+  paint()}
+function autoDone(){if(S.q)setTimeout(()=>{if(S.view==='drill'&&!T.done)markDone()},1200)}
+function markDone(){if(T.done)return;T.done=true;stop();beep(1320,.3);const q=S.q,d=S.d;
+  if(q){S.earned++;pop(`<div class="bigstar" style="color:#1f9d55">✓</div><h2>Nice!</h2>`,1100,()=>{if(S.q===q&&S.d===d)next()})}
+  else{const n=SET.rw.drill;if(n){earn(n);checkBadges();saveP();sc.textContent=P.stars}pop(`<div class="bigstar">★</div><h2>${n?`+${n} star${n>1?'s':''}!`:'Nice!'}</h2>`,1300,()=>{S.cat=d.cat;S.view='cat';render()})}}
+function pop(html,ms,then){const p=document.createElement('div');p.className='pop';p.innerHTML=`<div>${html}</div>`;document.body.appendChild(p);
+  const end=()=>{const v=p.querySelector('video');if(v){v.pause();if(v.src.startsWith('blob:'))URL.revokeObjectURL(v.src)}p.remove();then&&then()};
+  p.addEventListener('click',ev=>{if(ev.target===p||ev.target.closest('[data-close]'))end()});if(ms)setTimeout(()=>p.isConnected&&end(),ms);return p}
+async function vidSrc(x){if(x.vloc){try{const b=await vget(x.vloc);if(b)return URL.createObjectURL(b)}catch(e){}}if(x.vid)return '/_blob/'+encodeURIComponent(x.vid);return ''}
+async function playVideo(x,after){const src=await vidSrc(x);
+  if(!src){toast(x.vloc?'That video is saved on a different device.':'Video not found.');after&&after();return}
+  const p=pop(`<h2>${esc(x.name)}</h2><video controls playsinline autoplay src="${esc(src)}"></video><div class="row"><button class="btn" data-close>${S.view==='drill'?'Got it — let’s go!':'Close'}</button></div>`,0,()=>{if(after)after();else if(S.view==='drill'&&S.q)autoGo()});
+  p.querySelector('video').addEventListener('error',()=>toast('This video couldn’t play here.'))}
+/* ---------- rewards ---------- */
+const LVC=['#5a6b82','#1565c0','#1f9d55','#7b3fd1','#e3342f','#f26b1d','#ffb703','#0c8a99','#10223a'];
+function level(t=P.total){const L=[...SET.rw.levels].sort((a,b)=>a.at-b.at);let i=0;L.forEach((l,j)=>{if(t>=l.at)i=j});return{i,cur:L[i],next:L[i+1],c:LVC[i%LVC.length]}}
+function earn(n){if(!(n>0))return false;const b=level().i;P.stars+=n;P.total+=n;const s=today();P.days[s]=(P.days[s]||0)+n;return level().i>b}
+const wkey=d=>{const x=new Date(d);x.setDate(x.getDate()-(x.getDay()+6)%7);return dstr(x)};
+function streak(){let n=0;const d=new Date();if(!P.sess[dstr(d)])d.setDate(d.getDate()-1);while(P.sess[dstr(d)]){n++;d.setDate(d.getDate()-1)}return n}
+const weekCount=()=>{const w=wkey(new Date());return Object.entries(P.sess).filter(([d])=>wkey(d+'T12:00')===w).reduce((a,[,v])=>a+v,0)};
+const BADGES=[
+['first','First workout','Finish your first session',()=>P.n>=1],
+['n10','10 workouts','Finish 10 sessions',()=>P.n>=10],
+['n25','25 workouts','Finish 25 sessions',()=>P.n>=25],
+['n50','50 workouts','Finish 50 sessions',()=>P.n>=50],
+['sheet','Soft hands','Finish the whole Stickhandling Practice',()=>(P.rs['r-stick']||0)>=1],
+['sheet10','Puck magician','Finish Stickhandling Practice 10 times',()=>(P.rs['r-stick']||0)>=10],
+['st3','On fire','Train 3 days in a row',()=>P.best>=3],
+['st7','Unstoppable','Train 7 days in a row',()=>P.best>=7],
+['vid1','Follow the coach','Finish a follow-along video',()=>Object.keys(P.vw).length>=1],
+['vidall','Video pro','Finish every video',()=>{const all=[...new Set(Object.values(VLIB).flat().map(x=>x[0]))];return all.every(id=>P.vw[id])}],
+['week','Goal getter','Hit your weekly goal',()=>Object.keys(P.wk).length>=1]];
+function checkBadges(){const got=[];for(const [id,name,,test] of BADGES)if(!P.bd[id]&&test()){P.bd[id]=today();got.push(name)}return got}
+function completeSession(long,rid){const R=SET.rw,s=today(),lines=[];let tot=0;const add=(n,t)=>{if(n>0){tot+=n;lines.push([n,t])}};
+  add(R.session,'Finished!');if(long)add(R.long,'Long session bonus');
+  P.n++;P.sess[s]=(P.sess[s]||0)+1;if(rid)P.rs[rid]=(P.rs[rid]||0)+1;
+  const st=streak();P.best=Math.max(P.best,st);
+  if(!P.sb[s]){if(st===3&&R.s3){add(R.s3,'3 days in a row!');P.sb[s]=1}else if(st===7&&R.s7){add(R.s7,'7 days in a row!');P.sb[s]=1}}
+  const wk=wkey(new Date());if(R.wgoal&&weekCount()>=R.wgoal&&!P.wk[wk]){P.wk[wk]=1;add(R.wbonus,'Weekly goal reached!')}
+  const up=earn(tot),bad=checkBadges();saveP();sc.textContent=P.stars;return{tot,lines,up,bad}}
+function prizeLine(){const pz=[...SET.rw.prizes].sort((a,b)=>a.cost-b.cost),ok=pz.filter(z=>z.cost<=P.stars).pop(),nx=pz.find(z=>z.cost>P.stars);
+  return ok?`<p style="font-weight:800;color:#1f9d55">You have enough stars for: ${esc(ok.name)}!</p>`:nx?`<p style="font-weight:800">${nx.cost-P.stars} more ★ to ${esc(nx.name)}</p>`:''}
+function celebrate(title,r){const L=level();say(`${title} ${r.tot} stars!${r.up?' Level up! You are now '+L.cur.name+'!':''}`);
+  pop(`<div class="bigstar">🏆</div><h2>${esc(title)}</h2><div style="font-size:20px;font-weight:800;margin:12px 0;display:grid;gap:4px">${r.lines.map(([n,t])=>`<div>${esc(t)} <span style="color:var(--gold)">+${n} ★</span></div>`).join('')}</div>
+  ${r.up?`<p style="font-size:26px;font-weight:800;color:${L.c};margin:6px 0">Level up! You're now ${esc(L.cur.name)}!</p>`:''}${r.bad.length?`<p style="font-weight:800">🏅 New badge${r.bad.length>1?'s':''}: ${r.bad.map(esc).join(', ')}</p>`:''}
+  ${prizeLine()}<button class="btn" data-close style="width:100%;margin-top:8px">Back to camp</button>`,0)}
+const jersey=(L,w=110)=>`<svg viewBox="0 0 120 120" width="${w}" height="${w}" aria-hidden="true" style="flex:none"><path d="M38 12 12 26l10 26 12-6v62h52V46l12 6 10-26-26-14c-4 8-12 12-22 12S42 20 38 12z" fill="${L.c}" stroke="#10223a" stroke-width="4" stroke-linejoin="round"/><rect x="34" y="92" width="52" height="7" fill="#fff" opacity=".85"/><text x="60" y="80" text-anchor="middle" font-family="Lilita One,sans-serif" font-size="36" fill="#fff">${L.i+1}</text></svg>`;
+function next(){if(S.qi+1<S.q.length){S.qi++;step()}else finish()}
+function finish(){const total=S.q.filter(x=>x.kind==='drill').length,n=S.earned,full=n>=total-1,long=S.long,rid=S.rid;S.q=null;S.view='home';plan=mkPlan();
+  if(full){P.full[today()]=true;const r=completeSession(long,rid);render();celebrate('Workout complete!',r)}
+  else{const m=n*SET.rw.drill;earn(m);checkBadges();saveP();sc.textContent=P.stars;render();say('Nice work!');
+    pop(`<div class="bigstar">★</div><h2>Nice work!</h2><p style="font-weight:800;font-size:22px">You did ${n} drill${n===1?'':'s'}${m?` and earned ${m} star${m===1?'':'s'}`:''}. Finish a whole workout for ${SET.rw.session} stars!</p><button class="btn" data-close style="width:100%">Back to camp</button>`,0)}}
+function openEdit(x){S.edit=x?{...x,steps:[...x.steps]}:norm({name:'',cat:S.cat||'stick',anim:'dribble',secs:30,steps:[]},'c'+Date.now().toString(36));S.view='edit';render()}
+function saveEdit(){const e=S.edit;if(!e.name.trim()){toast('Give the drill a name first.');document.getElementById('f-name')?.focus();return}
+  const o=norm(e,e.id);delete o.id;if(!o.reps&&!o.secs)o.secs=30;if(!o.steps.length)o.steps=['Have fun!'];
+  OV={...OV,[e.id]:o};LS.set('ehc-ov',OV);put('drills/'+e.id,o);plan=mkPlan();S.view='coach';render();toast('Drill saved')}
+async function attach(file){const e=S.edit,st=document.getElementById('vstat');if(!file)return;
+  if(!/^video\//.test(file.type)){toast('Please pick a video.');return}
+  st.textContent='Saving video…';
+  try{
+    if(AS&&file.size<=20*1024*1024){const r=await AS.upload(file);e.vid=r.id;e.vloc='';st.textContent='Video attached (synced). Tap Save drill.'}
+    else{const key='v-'+e.id+'-'+Date.now();await vput(key,file);if(e.vloc)vdel(e.vloc).catch(()=>{});e.vloc=key;e.vid='';st.textContent='Video attached (kept on this iPad). Tap Save drill.'}
+    render(true)
+  }catch(err){st.textContent='Couldn’t save that video. Try a shorter clip.'}}
+
+/* ---------- events ---------- */
+app.addEventListener('click',ev=>{const b=ev.target.closest('[data-a]');if(!b||b.tagName==='INPUT')return;const a=b.dataset.a,v=b.dataset.v;
+  if(a!=='wipe')S.wipe=0;
+  if(a==='home'||a==='quit'){if(a==='quit'&&S.earned){finish();return}S.q=null;S.view='home';render()}
+  else if(a==='cat'){S.cat=v;S.view='cat';render()}
+  else if(a==='back'){S.view=S.cat?'cat':'home';render()}
+  else if(a==='drill'){const x=byId(v);if(x)openDrill(x)}
+  else if(a==='shuffle'){plan=mkPlan();render(true)}
+  else if(a==='start')runQ(qMix(),"Today's workout");
+  else if(a==='routine'){const r=rById(v);if(r)runQ(buildQ(r),r.name,r.id,r.rounds>=2)}
+  else if(a==='next')next();
+  else if(a==='rnew'){S.redit=normR({name:'',cat:'stick',rounds:1,water:false},'rc'+Date.now().toString(36));S.view='redit';render()}
+  else if(a==='redit'){const r=rById(v);if(r){S.redit=JSON.parse(JSON.stringify(r));S.view='redit';render()}}
+  else if(a==='rmove'||a==='rrem'){const l=S.redit[b.dataset.l],i=+v;if(a==='rrem')l.splice(i,1);else{const j=i+(+b.dataset.d);if(j>=0&&j<l.length)[l[i],l[j]]=[l[j],l[i]]}render(true)}
+  else if(a==='rsave'){const r=S.redit;if(!r.name.trim()){toast('Give the routine a name first.');document.getElementById('r-name')?.focus();return}const o=normR(r,r.id);delete o.id;ROV={...ROV,[r.id]:o};LS.set('ehc-rov',ROV);put('routines/'+r.id,o);S.view='coach';render();toast('Routine saved')}
+  else if(a==='rdelete'||a==='rrestore'){const o={...ROV};delete o[S.redit.id];ROV=o;LS.set('ehc-rov',ROV);del('routines/'+S.redit.id);S.view='coach';render();toast(a==='rdelete'?'Routine deleted':'Original routine restored')}
+  else if(a==='go'){const x=S.d;if(T.run){stop();T.ready=0}else{if(isVoice(x)){if(T.cnt>=target(x)){T.cnt=0;T.half=false;T.done=false}if(!T.cnt){getReady();return}}else if(T.left===0){T.left=x.secs;T.half=false;T.done=false}beep(990);begin()}paint()}
+  else if(a==='again'){stop();T.ready=0;T.left=S.d.secs;T.cnt=0;T.half=false;T.done=false;paint()}
+  else if(a==='rep'){const x=S.d,n=target(x);T.reps++;beep(T.reps>=n?1320:700,.1);b.querySelector('div').innerHTML=`${T.reps}<small>of ${n} · tap!</small>`;if(T.reps===n)say('Awesome! Tap I did it!');else if(x.sw&&T.reps===x.reps){T.half=true;say('Switch!')}}
+  else if(a==='done')markDone();
+  else if(a==='skip'){stop();T.done=true;next()}
+  else if(a==='yt'){const x=SET.vids[+v];if(x)ytPlay({id:ytId(x.url),list:plId(x.url),name:x.name,min:+x.min||0})}
+  else if(a==='plall'){const x=SET.vids[S.pl];if(x)ytPlay({list:plId(x.url),name:x.name,min:+x.min||0})}
+  else if(a==='dyt'){const x=S.d;stop();T.ready=0;paint();ytPlay({id:ytId(x.yt),list:plId(x.yt),name:x.name,ask:false})}
+  else if(a==='pl'){S.pl=+v;S.view='pl';render()}
+  else if(a==='ytv'){const x=(VLIB[plId((SET.vids[S.pl]||{}).url)]||[])[+v];if(x)ytPlay({id:x[0],list:plId((SET.vids[S.pl]||{}).url),name:x[1],min:parseInt(x[2])||0})}
+  else if(a==='surprise'){const n=(VLIB[plId((SET.vids[S.pl]||{}).url)]||[]).length,i=Math.floor(Math.random()*n),el=document.getElementById('v-'+i);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('pick');say('How about this one?');setTimeout(()=>el.classList.remove('pick'),2400)}}
+  else if(a==='vadd'){SET.vids=[...SET.vids,{name:'New video',url:'',min:10}];saveSET();render(true)}
+  else if(a==='vdel'){SET.vids=SET.vids.filter((_,i)=>i!==+v);saveSET();render(true)}
+  else if(a==='video')playVideo(S.d);
+  else if(a==='coach'){S.view='coach';render()}
+  else if(a==='mix'){SET.mix[v]=Math.max(0,Math.min(5,(+SET.mix[v]||0)+(+b.dataset.d)));saveSET();plan=mkPlan();render(true)}
+  else if(a==='new')openEdit(null);
+  else if(a==='edit'){const x=byId(v);if(x)openEdit(x)}
+  else if(a==='save')saveEdit();
+  else if(a==='restore'||a==='delete'){const id=S.edit.id,x=OV[id];if(a==='delete'&&x&&x.vloc)vdel(x.vloc).catch(()=>{});const o={...OV};delete o[id];OV=o;LS.set('ehc-ov',OV);del('drills/'+id);plan=mkPlan();S.view='coach';render();toast(a==='delete'?'Drill deleted':'Original drill restored')}
+  else if(a==='evideo')playVideo(S.edit);
+  else if(a==='vremove'){const e=S.edit;if(e.vloc)vdel(e.vloc).catch(()=>{});if(e.vid&&AS)AS.delete(e.vid).catch(()=>{});e.vid='';e.vloc='';render(true);toast('Video removed — tap Save drill')}
+  else if(a==='wipe'){if(S.wipe){P=fixP({rev:P.rev});saveP();S.wipe=0;sc.textContent=0;toast('Progress reset')}else S.wipe=1;render(true)}
+  else if(a==='rw'){S.view='rw';render()}
+  else if(a==='backup'){const blob=new Blob([JSON.stringify({app:'hockey-camp',v:1,date:today(),OV,ROV,SET,P},null,1)],{type:'application/json'}),u=URL.createObjectURL(blob),l=document.createElement('a');l.href=u;l.download=`hockey-camp-backup-${today()}.json`;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),5000);toast('Backup file saved')}
+  else if(a==='claim'){const z=SET.rw.prizes[+v];if(!z||P.stars<z.cost)return;const p=pop(`<div class="bigstar">🎁</div><h2>Get ${esc(z.name)}?</h2><p style="font-weight:800;font-size:20px">It costs ${z.cost} stars. You have ${P.stars}.</p><div class="row"><button class="btn done" data-close data-ok="1">Yes please!</button><button class="btn alt" data-close>Not yet</button></div>`,0);
+    p.querySelector('[data-ok]').addEventListener('click',()=>{if(P.stars<z.cost)return;P.stars-=z.cost;P.claims=[...P.claims,{id:Date.now().toString(36),name:z.name,cost:z.cost,d:today(),st:'pending'}].slice(-30);saveP();sc.textContent=P.stars;beep(1320,.3);say(`Great choice! Go tell a grown-up you earned ${z.name}!`);setTimeout(()=>{render(true);pop(`<div class="bigstar">🎉</div><h2>You earned it!</h2><p style="font-weight:800;font-size:20px">Go tell a grown-up: ${esc(z.name)}!</p><button class="btn" data-close>OK</button>`,0)},50)})}
+  else if(a==='cgive'||a==='cno'){P.claims=P.claims.map(c=>{if(c.id!==v||c.st!=='pending')return c;if(a==='cno')P.stars+=c.cost;return{...c,st:a==='cgive'?'given':'declined'}});saveP();sc.textContent=P.stars;render(true);toast(a==='cgive'?'Marked as given':'Declined — stars refunded')}
+  else if(a==='pzadd'){SET.rw.prizes=[...SET.rw.prizes,{name:'New prize',cost:100}];saveSET();render(true)}
+  else if(a==='pzdel'){SET.rw.prizes=SET.rw.prizes.filter((_,i)=>i!==+v);saveSET();render(true)}
+  else if(a==='lvadd'){const L=SET.rw.levels,top=Math.max(...L.map(z=>z.at));SET.rw.levels=[...L,{name:'New level',at:top+500}];saveSET();render(true)}
+  else if(a==='lvdel'){SET.rw.levels=SET.rw.levels.filter((_,i)=>i!==+v);saveSET();render(true)}
+  else if(a==='adj'){const n=Math.max(1,Math.min(999,Math.round(+document.getElementById('adj').value||0))),d=+b.dataset.d;if(d>0){earn(n);checkBadges();toast(`Gave ${n} stars`)}else{P.stars=Math.max(0,P.stars-n);toast(`Took away ${n} stars`)}saveP();sc.textContent=P.stars;render(true)}
+});
+app.addEventListener('change',ev=>{const t=ev.target;
+  if(t.dataset.a==='autovid'){SET.autoVid=t.checked;saveSET();return}
+  if(t.dataset.a==='beat'){SET.beat=+t.value;saveSET();return}
+  if(t.id==='restore'&&t.files[0]){t.files[0].text().then(txt=>{const d=JSON.parse(txt);if(d.app!=='hockey-camp')throw 0;OV=d.OV||{};ROV=d.ROV||{};SET={...SET,...(d.SET||{})};SET.rw=normRW(SET.rw);P=fixP(d.P);LS.set('ehc-ov',OV);LS.set('ehc-rov',ROV);saveSET();saveP();plan=mkPlan();render();toast('Backup restored')}).catch(()=>toast('That file is not a Hockey Camp backup.'));return}
+  if(t.dataset.rw){SET.rw=normRW({...SET.rw,[t.dataset.rw]:t.value});saveSET();return}
+  if(t.dataset.pz!==undefined){const i=+t.dataset.pz,k=t.dataset.pk;SET.rw=normRW({...SET.rw,prizes:SET.rw.prizes.map((z,j)=>j===i?{...z,[k]:t.value}:z)});saveSET();return}
+  if(t.dataset.lv!==undefined){const i=+t.dataset.lv,k=t.dataset.lk;SET.rw=normRW({...SET.rw,levels:SET.rw.levels.map((z,j)=>j===i?{...z,[k]:t.value}:z)});saveSET();return}
+  if(t.dataset.vi!==undefined){const i=+t.dataset.vi,kk=t.dataset.vk,o={...SET.vids[i]};o[kk]=kk==='min'?Math.max(0,Math.min(120,+t.value||0)):t.value.trim().slice(0,kk==='url'?300:50);SET.vids=SET.vids.map((x,j)=>j===i?o:x);saveSET();if(kk==='url'&&o.url&&!ytOk(o.url))toast('That doesn’t look like a YouTube link.');return}
+  const rf=t.dataset.r;if(rf&&S.redit){const r=S.redit;
+    if(rf==='add'){if(t.value){r[t.dataset.l].push(t.value);render(true)}}
+    else if(rf==='rounds')r.rounds=+t.value;else if(rf==='water')r.water=t.checked;else if(rf==='cat')r.cat=t.value;else r[rf]=t.value;
+    return}
+  const f=t.dataset.f;if(!f||!S.edit)return;const e=S.edit;
+  if(f==='file'){attach(t.files[0]);return}
+  if(f==='mode'){const amt=e.reps||e.secs||30;if(t.value!=='t'){e.cnt=t.value==='v'?'voice':'tap';e.reps=Math.min(99,amt>20?10:amt);e.secs=0}else if(e.reps){e.secs=30;e.reps=0}render(true)}
+  else if(f==='cat'||f==='anim'){e[f]=t.value;const pv=document.getElementById('prev');if(pv){const c=cat(e.cat).c;anims=anims.filter(x=>x.el!==pv);pv.dataset.anim=e.anim;pv.dataset.c=c;pv.parentElement.style.setProperty('--c',c);startAnims()}}
+  else if(t.type==='checkbox')e[f]=t.checked});
+app.addEventListener('input',ev=>{const t=ev.target,f=t.dataset.f,e=S.edit;
+  if((t.dataset.r==='name'||t.dataset.r==='finish')&&S.redit){S.redit[t.dataset.r]=t.value;return}
+  if(!f||!e)return;
+  if(f==='name'||f==='need'||f==='tip'||f==='yt')e[f]=t.value;
+  else if(f==='steps')e.steps=t.value.split('\n').map(s=>s.trim()).filter(Boolean);
+  else if(f==='amt'){const n=Math.max(1,Math.round(+t.value||0));if(e.reps)e.reps=Math.min(99,n);else e.secs=Math.min(600,n)}});
+/* Coach button: press and hold so little hands don't wander in */
+{const cb=document.getElementById('coach');let h=0;
+ const go=()=>{cb.classList.remove('hold');if(['drill','edit','redit','water','finish'].includes(S.view))return;S.view='coach';render()};
+ cb.addEventListener('pointerdown',()=>{cb.classList.add('hold');h=setTimeout(()=>{h=0;go()},1200)});
+ const cancel=()=>{cb.classList.remove('hold');if(h){clearTimeout(h);h=0;return true}};
+ cb.addEventListener('pointerup',()=>{if(cancel())toast('Grown-ups: press and hold Coach')});
+ cb.addEventListener('pointerleave',cancel);cb.addEventListener('pointercancel',cancel);
+ cb.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}})}
+function ytPlay({id,list,name,min,ask=true}){const t0=Date.now(),src=id?`https://www.youtube-nocookie.com/embed/${id}?playsinline=1&rel=0&modestbranding=1&autoplay=1${list?'&list='+list:''}`:`https://www.youtube-nocookie.com/embed/videoseries?list=${list}&playsinline=1&rel=0&modestbranding=1`,ext=id?`https://www.youtube.com/watch?v=${id}${list?'&list='+list:''}`:`https://www.youtube.com/playlist?list=${list}`;
+  if(!navigator.onLine)toast('Videos need internet — connect to Wi-Fi.');
+  pop(`<h2 style="font-size:28px">${esc(name||'Video')}</h2><div class="yt-frame"><iframe src="${esc(src)}" title="${esc(name||'Video')}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+  <div class="row"><button class="btn done" data-close>Done</button><a class="btn alt" href="${esc(ext)}" target="_blank" rel="noopener" style="flex:0 1 220px;font-size:18px">Won't play? Open YouTube</a></div>`,0,()=>{if(ask&&Date.now()-t0>=60000)askFinished({name,id:id||'',min:min||0})})}
+function askFinished(y){const p=pop(`<div class="bigstar">▶</div><h2>Did you finish your video?</h2><p style="font-weight:800;font-size:20px">${esc(y.name||'')}</p><div class="row"><button class="btn done" data-close data-yes="1">Yes! I did it!</button><button class="btn alt" data-close>Not yet</button></div>`,0);
+  p.querySelector('[data-yes]').addEventListener('click',()=>{if(y.id)P.vw={...P.vw,[y.id]:1};const r=completeSession(y.min>=20,null);beep(1320,.3);if(S.view==='pl'||S.view==='home')render(true);setTimeout(()=>celebrate('Video complete!',r),50)})}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState!=='visible'||!S.yt)return;const y=S.yt;S.yt=null;if(Date.now()-y.t<60000)return;const v={name:y.name};
+  const p=pop(`<div class="bigstar">▶</div><h2>Did you finish your video?</h2><p style="font-weight:800;font-size:20px">${esc(v?v.name:'')}</p><div class="row"><button class="btn done" data-close data-yes="1">Yes! I did it!</button><button class="btn alt" data-close>Not yet</button></div>`,0);
+  p.querySelector('[data-yes]').addEventListener('click',()=>{if(y.id)P.vw={...P.vw,[y.id]:1};const r=completeSession(y.min>=20,null);beep(1320,.3);if(S.view==='pl'||S.view==='home')render(true);setTimeout(()=>celebrate('Video complete!',r),50)})});
+document.getElementById('starbtn').addEventListener('click',()=>{if(['drill','water','finish','edit','redit'].includes(S.view))return;S.view='rw';render()});
+render();
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
