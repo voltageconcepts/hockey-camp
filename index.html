@@ -105,6 +105,7 @@ details li{margin-bottom:6px}
 .badge .ic{font-size:44px;line-height:1.1}.badge b{font-family:"Lilita One";font-weight:400;font-size:21px}.badge small{color:var(--mute);font-weight:700;font-size:14px}.badge.off{opacity:.5;filter:grayscale(1)}
 .lrow{display:grid;grid-template-columns:minmax(0,1fr) 110px 52px;gap:10px;align-items:end;margin-bottom:6px}.lrow .fld{margin:0}
 .yt-frame{position:relative;width:min(860px,calc(96vw - 84px));aspect-ratio:16/9;margin:12px 0;border-radius:16px;overflow:hidden;background:#000}.yt-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.bignum{width:min(300px,70vw);aspect-ratio:1;border-radius:50%;border:18px solid var(--c);display:grid;place-items:center;text-align:center;font-family:"Lilita One",sans-serif;line-height:.9}.bignum span{font-size:clamp(110px,22vw,170px);color:var(--c)}.bignum small{display:block;font-family:Nunito;font-weight:800;font-size:22px;color:var(--mute);margin-top:-20px}
 .link{background:none;color:var(--blue);text-decoration:underline;font-size:16px;font-weight:700;padding:8px 0;min-height:44px}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#10223a;color:#fff;padding:12px 20px;border-radius:14px;font-weight:800;z-index:30;font-size:16px;max-width:90vw;text-align:center}
 /* coach corner */
@@ -358,7 +359,7 @@ d('power','Weight Twists','twist',0,10,0,'Light weight',['Sit, knees bent, lean 
 d('power','Weight Press','press',0,10,0,'Light weights',['Weights at your shoulders.','Push them up to the sky!','Bring them down slow.'],'Light weights only.'),
 d('power','Bear Crawl (there & back)','bear',0,1,0,'',['Hands and feet, knees up.','Crawl to the other side…','…and back!'],'Back flat like a table.'),
 d('power','Push Ups','pushup',0,5,0,'',['Body straight like a hockey stick.','Chest down, push up.','Too hard? Use your knees.'],'Knee push ups count too!')
-].map((x,i)=>({...x,id:'b'+i,sw:!!x.sw,pin:i>=32&&i<=39,unit:{42:'each leg',46:'trip'}[i]||''}));
+].map((x,i)=>({...x,reps:i>=32&&i<=39&&x.reps?15:x.reps,secs:x.secs&&['warm','legs','bal','cool'].includes(x.cat)?45:x.secs,id:'b'+i,sw:!!x.sw,pin:i>=32&&i<=39,unit:{42:'each leg',46:'trip'}[i]||''}));
 const RBUILT=[
 {id:'r-stick',name:'Stickhandling Practice',cat:'stick',rounds:2,water:true,warm:[],main:['b32','b33','b34','b35','b36','b37','b38','b39'],cool:[],finish:'Shoot and score! One shot into the net to end practice.'},
 {id:'r-workout',name:'Workout',cat:'power',rounds:2,water:true,warm:['b1','b2'],main:['b40','b41','b42','b43','b44','b45','b46','b47'],cool:['b29','b30'],finish:''}];
@@ -421,7 +422,7 @@ function home(){
   const sec=(t,arr)=>arr&&arr.length?`<li style="margin-top:6px;color:var(--mute);font-size:14px;font-weight:800">${t}</li>${arr.map(x=>`<li><span class="dot" style="background:${cat(x.cat).c}"></span>${esc(x.name)}</li>`).join('')}`:'';
   const LV=level(),pct=LV.next?Math.round((P.total-LV.cur.at)/(LV.next.at-LV.cur.at)*100):100,st=streak();
   const strip=`<button class="rstrip" data-a="rw">${jersey(LV,64)}<div style="flex:1"><b style="color:${LV.c}">${esc(LV.cur.name)}</b><div class="bar" style="max-width:360px"><i style="width:${pct}%;background:${LV.c}"></i></div><small>${LV.next?`${LV.next.at-P.total} stars to ${esc(LV.next.name)}`:'Top level!'}</small></div><span class="pill"><span>★ ${P.stars}</span>${st?`<span>🔥 ${st} day${st>1?'s':''}</span>`:''}${SET.rw.wgoal?`<span>This week ${Math.min(weekCount(),SET.rw.wgoal)}/${SET.rw.wgoal}</span>`:''}</span></button>`;
-  return `${strip}<section class="hero"><div><h2>Ready to train, Elias?</h2><p>Today's workout: ${plan.length} drills, about ${mins(plan)} minutes. The app counts and moves on by itself — just follow along!</p><button class="go" data-a="start" ${plan.length?'':'disabled'}>▶ Start workout</button><button class="link" data-a="shuffle">Shuffle the extras</button></div>
+  return `${strip}<section class="hero"><div><h2>Ready to train, Elias?</h2><p>Today's workout: ${plan.length} drills, about ${mins(plan)} minutes. Stickhandling shows how many to do; warm-ups and stretches run on a timer.</p><button class="go" data-a="start" ${plan.length?'':'disabled'}>▶ Start workout</button><button class="link" data-a="shuffle">Shuffle the extras</button></div>
   <div><ul class="plan">${sec('Warm up',grp.warm)}${sec('Stickhandling',grp.stick)}${sec('Extras',grp.extra)}${sec('Cool down',grp.cool)}</ul></div></section>
   <h3 class="sec">More training</h3><div class="grid">${R.map(card).join('')}${(SET.vids||[]).map(vcard).join('')}</div>
   <h3 class="sec">Pick a drill</h3><div class="grid">${CATS.map(c=>`<button class="tile" style="--c:${c.c}" data-a="cat" data-v="${c.id}">${still(c.a,'#ffffff40')}<div><b>${c.name}</b><br><small>${c.b} · ${L.filter(x=>x.cat===c.id).length} drills</small></div></button>`).join('')}</div>
@@ -429,14 +430,14 @@ function home(){
   <details><summary>Notes for the grown-up</summary><ul>
   <li>Built for a 5-year-old: short, playful, bodyweight only. 10–15 minutes is plenty — stop while it's still fun.</li>
   <li>Press and hold <b>Coach</b> (top right) to add or change drills, attach videos and change the workout mix.</li>
-  <li>Stickhandling drills are counted out loud by the app, so he never has to stop. Change the counting speed in Coach Corner.</li><li>YouTube videos play right inside the app (they need internet). Tapping Done after 1+ minute asks if he finished — that counts as a workout. Everything else works with no internet.</li><li>Everything saves on this iPad only. Use Back up in Coach Corner if you ever switch devices.</li><li>Stars are given for finishing whole sessions. Tap the star counter or the level bar to see prizes and badges.</li>
+  <li>Stickhandling drills show a big number (15) — he does them and taps I did it. Timed drills get a 10-second get-ready countdown.</li><li>Warm-ups and cool-downs are free: no stars. A workout only pays out when every real drill is done.</li><li>YouTube videos play right inside the app (they need internet). Tapping Done after 1+ minute asks if he finished — that counts as a workout. Everything else works with no internet.</li><li>Everything saves on this iPad only. Use Back up in Coach Corner if you ever switch devices.</li><li>Stars are given for finishing whole sessions. Tap the star counter or the level bar to see prizes and badges.</li>
   <li>Keep weights light. Stop if anything hurts.</li></ul></details>`}
 function catView(){const c=cat(S.cat);
   return `<button class="back" data-a="home">← Back</button><h2 class="pname" style="--c:${c.c};margin-top:18px">${c.name}</h2>
   <div class="list">${live().filter(x=>x.cat===c.id).map(x=>`<button class="drill" style="--c:${c.c}" data-a="drill" data-v="${x.id}">${still(x.anim,c.c)}<div><b>${esc(x.name)}</b><span>${meta(x)}${hasVid(x)?' · video':''}</span></div><span class="g">▶</span></button>`).join('')||'<p class="note">No drills here yet — add some in Coach Corner.</p>'}</div>`}
 function drillView(){const x=S.d,c=cat(x.cat),q=S.q;
   const voice=x.reps&&x.cnt==='voice';
-  const meter=x.reps&&!voice?`<button class="puck" data-a="rep" aria-label="Count one rep"><div>${T.reps}<small>of ${target(x)} · tap!</small></div></button>`
+  const meter=voice?`<div class="bignum" style="--c:${c.c}"><span>${target(x)}</span><small>${x.sw?`${x.reps} each side`:esc(x.unit||'times')}</small></div>`:x.reps?`<button class="puck" data-a="rep" aria-label="Count one rep"><div>${T.reps}<small>of ${target(x)} · tap!</small></div></button>`
   :`<div class="ring"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="88" fill="none" stroke="var(--line)" stroke-width="18"/><circle id="arc" cx="100" cy="100" r="88" fill="none" stroke="${c.c}" stroke-width="18" stroke-linecap="round" stroke-dasharray="553" stroke-dashoffset="0"/></svg><div class="n"><div><span id="tl">${voice?0:T.left}</span><small id="tm">${voice?'of '+target(x):'seconds'}</small></div></div></div>
   <div class="row"><button class="btn" id="go" data-a="go" style="background:${c.c}">Start</button><button class="btn alt" data-a="again">Restart</button></div>`;
   const media=(hasVid(x)?`<button class="btn vid" data-a="video">▶ Watch how</button>`:'')+(x.yt?`<button class="btn yt" data-a="dyt">▶ YouTube</button>`:'');
@@ -444,7 +445,7 @@ function drillView(){const x=S.d,c=cat(x.cat),q=S.q;
   <div class="play" style="--c:${c.c}"><div><h2 class="pname">${esc(x.name)}</h2>${x.need?`<span class="need">${esc(x.need)}</span>`:''}
   <div class="figbox"><svg viewBox="0 0 200 160" data-anim="${x.anim}" data-c="${c.c}" ${x.sw?'data-mir="1"':''} role="img" aria-label="Animation of ${esc(x.name)}"></svg></div>
   <ol class="steps">${x.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>${x.tip?`<div class="tip"><b>Coach tip:</b> ${esc(x.tip)}</div>`:''}</div>
-  <div class="meter">${media?`<div class="row">${media}</div>`:''}${meter}<div class="row"><button class="btn done" data-a="done">★ I did it!</button>${q?'<button class="btn alt" data-a="skip">Skip</button>':''}</div>${voice?'<p class="note" style="margin:0;text-align:center">The app counts out loud — move the puck on every number!</p>':''}</div></div>`}
+  <div class="meter">${media?`<div class="row">${media}</div>`:''}${meter}<div class="row"><button class="btn done" data-a="done">★ I did it!</button>${q?'<button class="btn alt" data-a="skip">Skip</button>':''}</div>${voice?'<p class="note" style="margin:0;text-align:center">Do them all, then tap I did it!</p>':''}</div></div>`}
 function rwView(){const L=level(),R=SET.rw,st=streak(),pend=P.claims.filter(c=>c.st==='pending'),pct=L.next?Math.round((P.total-L.cur.at)/(L.next.at-L.cur.at)*100):100,prizes=[...R.prizes].map((z,i)=>({...z,i})).sort((a,b)=>a.cost-b.cost);
   return `<button class="back" data-a="home">← Back</button>
   <section class="hero" style="margin-top:16px"><div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">${jersey(L,120)}<div style="flex:1;min-width:200px"><h2 style="color:${L.c}">${esc(L.cur.name)}</h2><p style="margin:6px 0">${L.next?`${L.next.at-P.total} more stars to <b>${esc(L.next.name)}</b>`:'Top level — you are a legend!'}</p><div class="bar"><i style="width:${pct}%;background:${L.c}"></i></div></div></div>
@@ -486,7 +487,7 @@ function coachView(){const A=all();
   <div class="panel"><h3>Start workout mix</h3><p class="note">How many random drills from each group go into "Start workout". Pinned drills (his 8 sheet stickhandling drills) are always included, in order.</p>
   <div class="mix">${CATS.map(c=>`<div class="mixrow"><span class="dot" style="background:${c.c}"></span><span class="nm">${c.name}</span><button class="step" data-a="mix" data-v="${c.id}" data-d="-1" aria-label="Fewer ${c.name}">−</button><output>${+SET.mix[c.id]||0}</output><button class="step" data-a="mix" data-v="${c.id}" data-d="1" aria-label="More ${c.name}">+</button></div>`).join('')}</div>
   <label class="chk" style="margin-top:10px"><input type="checkbox" data-a="autovid" ${SET.autoVid?'checked':''}> Pop up the drill's video when a drill opens</label>
-  <label class="fld" style="max-width:340px;margin-top:8px">Stickhandling counting speed<select data-a="beat">${[[2,'Slow'],[1.4,'Medium'],[1,'Fast']].map(([v,n])=>`<option value="${v}" ${SET.beat===v?'selected':''}>${n}</option>`).join('')}</select></label></div>
+</div>
   <div class="panel"><h3>YouTube follow-along</h3><p class="note">Full sessions he follows along with. They play inside the app (internet needed); when he finishes, it counts as a workout. Paste a playlist or a single video link.</p>
   ${SET.vids.map((v,i)=>`<div style="border-top:1px solid var(--line);padding-top:10px;margin-top:6px"><div class="two"><label class="fld">Name<input data-vi="${i}" data-vk="name" value="${esc(v.name)}" maxlength="50"></label><label class="fld">Minutes<input type="number" inputmode="numeric" data-vi="${i}" data-vk="min" value="${v.min||''}"></label></div>
   <label class="fld">YouTube link${ytOk(v.url)?'':' <span class="chip">link not recognized</span>'}<input type="url" inputmode="url" data-vi="${i}" data-vk="url" value="${esc(v.url)}" placeholder="https://youtube.com/…"></label><button class="sbtn red" data-a="vdel" data-v="${i}">Remove</button></div>`).join('')}
@@ -508,7 +509,7 @@ function editView(){const e=S.edit,c=cat(e.cat),isC=e.id[0]==='c',yq='https://ww
   <div class="form"><div class="panel" style="margin:0">
   <label class="fld">Drill name<input id="f-name" data-f="name" value="${esc(e.name)}" maxlength="60"></label>
   <div class="two"><label class="fld">Group<select data-f="cat">${CATS.map(x=>`<option value="${x.id}" ${x.id===e.cat?'selected':''}>${x.name}</option>`).join('')}</select></label>
-  <label class="fld">Counts by<select data-f="mode"><option value="t" ${e.reps?'':'selected'}>Timer (seconds)</option><option value="v" ${e.reps&&e.cnt==='voice'?'selected':''}>Reps — app counts out loud</option><option value="r" ${e.reps&&e.cnt!=='voice'?'selected':''}>Reps — tap to count</option></select></label></div>
+  <label class="fld">Counts by<select data-f="mode"><option value="t" ${e.reps?'':'selected'}>Timer (seconds)</option><option value="v" ${e.reps&&e.cnt==='voice'?'selected':''}>Reps — show the number (no tapping)</option><option value="r" ${e.reps&&e.cnt!=='voice'?'selected':''}>Reps — tap to count</option></select></label></div>
   <div class="two"><label class="fld">${e.reps?'Reps':'Seconds'}<input type="number" inputmode="numeric" min="1" max="${e.reps?99:600}" data-f="amt" value="${e.reps||e.secs||30}"></label>
   <label class="fld">Equipment<input data-f="need" value="${esc(e.need)}" placeholder="e.g. Stick + ball" maxlength="40"></label></div>
   <label class="fld">Steps (one per line)<textarea data-f="steps">${esc(e.steps.join('\n'))}</textarea></label>
@@ -531,11 +532,12 @@ function render(keep){stop();sc.textContent=P.stars;const y=scrollY;
   if(S.view==='drill'&&!S.d.reps)paint();startAnims()}
 
 /* ---------- drill play ---------- */
-const isVoice=x=>x.reps&&x.cnt==='voice',isAuto=x=>!x.reps||isVoice(x);
+const isVoice=x=>x.reps&&x.cnt==='voice',isAuto=x=>!x.reps,isFree=x=>x.cat==='warm'||x.cat==='cool';
 function openDrill(x){stop();S.d=x;T={left:x.secs,run:false,id:0,reps:0,cnt:0,half:false,ready:0,done:false};S.view='drill';render();
-  if(SET.autoVid&&hasVid(x))playVideo(x,autoGo);else autoGo()}
+  const go=()=>{if(isVoice(x)){if(S.view==='drill'&&S.d===x)say(`${S.q?'Next up: ':''}${x.name}. Do ${target(x)}!${x.sw?' Switch sides halfway.':''}`)}else autoGo()};
+  if(SET.autoVid&&hasVid(x))playVideo(x,go);else go()}
 function autoGo(){if(S.view==='drill'&&S.q&&isAuto(S.d)&&!T.run&&!T.ready)getReady()}
-function getReady(){const x=S.d;stop();T.ready=5;T.run=true;say(`${S.q?'Next up: ':''}${x.name}. Get ready!`);paint();
+function getReady(){const x=S.d;stop();T.ready=10;T.run=true;say(`${S.q?'Next up: ':''}${x.name}. Get ready!`);paint();
   T.id=setInterval(()=>{T.ready--;if(T.ready<=3&&T.ready>0){beep(660);say(String(T.ready))}
     if(T.ready<=0){clearInterval(T.id);T.ready=0;T.run=false;beep(1100,.25);say('Go!');begin()}else paint()},1000)}
 function begin(){const x=S.d;T.run=true;if(isVoice(x)){T.id=setInterval(countTick,SET.beat*1000)}else T.id=setInterval(tick,1000);paint()}
@@ -543,7 +545,7 @@ function countTick(){const x=S.d,n=target(x);T.cnt++;beep(T.cnt>=n?1320:760,.08)
   if(x.sw&&T.cnt===x.reps&&T.cnt<n){T.half=true;say(T.cnt+'. Switch!')}else say(String(T.cnt));
   if(T.cnt>=n){stop();setTimeout(()=>say('Great job!'),500);autoDone()}paint()}
 function paint(){const a=document.getElementById('arc');if(!a)return;const x=S.d,v=isVoice(x),g=document.getElementById('go'),l=document.getElementById('tl'),m=document.getElementById('tm');
-  if(T.ready){a.style.strokeDashoffset=553*(1-T.ready/5);l.textContent=T.ready;m.textContent='get ready!';g.textContent='Pause';return}
+  if(T.ready){a.style.strokeDashoffset=553*(1-T.ready/10);l.textContent=T.ready;m.textContent='get ready!';g.textContent='Pause';return}
   if(v){const n=target(x);a.style.strokeDashoffset=553*(1-T.cnt/n);l.textContent=T.cnt;m.textContent=T.run?(T.half?'other side! of '+n:'of '+n):(T.cnt>=n?'done!':'of '+n);g.textContent=T.run?'Pause':(T.cnt>=n?'Again':T.cnt?'Keep going':'Start')}
   else{a.style.strokeDashoffset=553*(1-T.left/x.secs);l.textContent=T.left;m.textContent=T.run?(T.half?'other side!':'GO!'):(T.left===0?'done!':'seconds');g.textContent=T.run?'Pause':(T.left===0?'Again':'Start')}}
 function tick(){T.left--;const x=S.d;
@@ -552,9 +554,9 @@ function tick(){T.left--;const x=S.d;
   if(T.left<=0){T.left=0;stop();beep(1320,.5);say('Great job!');autoDone()}
   paint()}
 function autoDone(){if(S.q)setTimeout(()=>{if(S.view==='drill'&&!T.done)markDone()},1200)}
-function markDone(){if(T.done)return;T.done=true;stop();beep(1320,.3);const q=S.q,d=S.d;
-  if(q){S.earned++;pop(`<div class="bigstar" style="color:#1f9d55">✓</div><h2>Nice!</h2>`,1100,()=>{if(S.q===q&&S.d===d)next()})}
-  else{const n=SET.rw.drill;if(n){earn(n);checkBadges();saveP();sc.textContent=P.stars}pop(`<div class="bigstar">★</div><h2>${n?`+${n} star${n>1?'s':''}!`:'Nice!'}</h2>`,1300,()=>{S.cat=d.cat;S.view='cat';render()})}}
+function markDone(){if(T.done)return;T.done=true;stop();beep(1320,.3);const q=S.q,d=S.d,free=isFree(d);
+  if(q){if(!free)S.earned++;pop(`<div class="bigstar" style="color:#1f9d55">✓</div><h2>Nice!</h2>`,1100,()=>{if(S.q===q&&S.d===d)next()})}
+  else{const n=free?0:SET.rw.drill;if(n){earn(n);checkBadges();saveP();sc.textContent=P.stars}pop(`<div class="bigstar">${n?'★':'✓'}</div><h2>${n?`+${n} star${n>1?'s':''}!`:'Nice!'}</h2>${free?'<p style="font-weight:800">Warm-ups and stretches are free — stars come from the real drills!</p>':''}`,free?1800:1300,()=>{S.cat=d.cat;S.view='cat';render()})}}
 function pop(html,ms,then){const p=document.createElement('div');p.className='pop';p.innerHTML=`<div>${html}</div>`;document.body.appendChild(p);
   const end=()=>{const v=p.querySelector('video');if(v){v.pause();if(v.src.startsWith('blob:'))URL.revokeObjectURL(v.src)}p.remove();then&&then()};
   p.addEventListener('click',ev=>{if(ev.target===p||ev.target.closest('[data-close]'))end()});if(ms)setTimeout(()=>p.isConnected&&end(),ms);return p}
@@ -599,10 +601,10 @@ function celebrate(title,r){const L=level();say(`${title} ${r.tot} stars!${r.up?
   ${prizeLine()}<button class="btn" data-close style="width:100%;margin-top:8px">Back to camp</button>`,0)}
 const jersey=(L,w=110)=>`<svg viewBox="0 0 120 120" width="${w}" height="${w}" aria-hidden="true" style="flex:none"><path d="M38 12 12 26l10 26 12-6v62h52V46l12 6 10-26-26-14c-4 8-12 12-22 12S42 20 38 12z" fill="${L.c}" stroke="#10223a" stroke-width="4" stroke-linejoin="round"/><rect x="34" y="92" width="52" height="7" fill="#fff" opacity=".85"/><text x="60" y="80" text-anchor="middle" font-family="Lilita One,sans-serif" font-size="36" fill="#fff">${L.i+1}</text></svg>`;
 function next(){if(S.qi+1<S.q.length){S.qi++;step()}else finish()}
-function finish(){const total=S.q.filter(x=>x.kind==='drill').length,n=S.earned,full=n>=total-1,long=S.long,rid=S.rid;S.q=null;S.view='home';plan=mkPlan();
+function finish(){const total=S.q.filter(x=>x.kind==='drill'&&!isFree(x.d)).length,n=S.earned,full=total>0&&n>=total,long=S.long,rid=S.rid;S.q=null;S.view='home';plan=mkPlan();
   if(full){P.full[today()]=true;const r=completeSession(long,rid);render();celebrate('Workout complete!',r)}
   else{const m=n*SET.rw.drill;earn(m);checkBadges();saveP();sc.textContent=P.stars;render();say('Nice work!');
-    pop(`<div class="bigstar">★</div><h2>Nice work!</h2><p style="font-weight:800;font-size:22px">You did ${n} drill${n===1?'':'s'}${m?` and earned ${m} star${m===1?'':'s'}`:''}. Finish a whole workout for ${SET.rw.session} stars!</p><button class="btn" data-close style="width:100%">Back to camp</button>`,0)}}
+    pop(`<div class="bigstar">★</div><h2>Nice work!</h2><p style="font-weight:800;font-size:22px">You did ${n} drill${n===1?'':'s'}${m?` and earned ${m} star${m===1?'':'s'}`:''}. Finish every drill (warm-ups and stretches don't count) for ${SET.rw.session} stars!</p><button class="btn" data-close style="width:100%">Back to camp</button>`,0)}}
 function openEdit(x){S.edit=x?{...x,steps:[...x.steps]}:norm({name:'',cat:S.cat||'stick',anim:'dribble',secs:30,steps:[]},'c'+Date.now().toString(36));S.view='edit';render()}
 function saveEdit(){const e=S.edit;if(!e.name.trim()){toast('Give the drill a name first.');document.getElementById('f-name')?.focus();return}
   const o=norm(e,e.id);delete o.id;if(!o.reps&&!o.secs)o.secs=30;if(!o.steps.length)o.steps=['Have fun!'];
