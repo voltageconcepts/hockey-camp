@@ -1,6 +1,6 @@
 // Hockey Camp offline support: keeps the app and thumbnails on the iPad.
 // Bump VERSION whenever you upload new files so the iPad picks them up.
-const VERSION='hockey-camp-v5';
+const VERSION='hockey-camp-v6';
 const FILES=['./', 'index.html', 'manifest.webmanifest', 'icons/apple-touch-icon.png', 'icons/icon-192.png', 'icons/icon-512.png', 'thumbs/177-60lpLZE.jpg', 'thumbs/7HluVwbAv3w.jpg', 'thumbs/8-LqKpnafHs.jpg', 'thumbs/DLEWgkVlmHg.jpg', 'thumbs/EOni5VdW9vE.jpg', 'thumbs/HxqbY6F5PJY.jpg', 'thumbs/Nugvy8UFGM8.jpg', 'thumbs/RHtdlyH2YG0.jpg', 'thumbs/Xk6I29zKcvs.jpg', 'thumbs/_ftLScGoVOI.jpg', 'thumbs/ex6v0WMkns8.jpg', 'thumbs/fzkc9iUKFl4.jpg', 'thumbs/qTMh3y_QKu4.jpg', 'thumbs/tO_2mB53Bgs.jpg'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(VERSION).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(n=>n!==VERSION).map(n=>caches.delete(n)))).then(()=>self.clients.claim()))});
