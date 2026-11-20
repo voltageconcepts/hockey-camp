@@ -347,7 +347,7 @@ d('stick','One Hand Side Handles','onehandS',0,10,0,'Stick + puck',['Top hand on
 d('stick','2 Hands Front Handles','twoF',0,10,0,'Stick + puck',['Two hands on the stick.','Puck in front of you.','Side to side — soft hands!'],LEFTY),
 d('stick','2 Hands Side Handles','twoS',0,10,0,'Stick + puck',['Two hands on the stick.','Puck at your side.','Move it front and back.'],'Bottom hand slides down the stick to help.'),
 d('stick','Front Handles Wide Toe to Toe','wide',0,10,0,'Stick + puck',['Face forward, feet wide.','Take the puck to one toe…','…then all the way to the other toe!'],'Big wide reach — stretch those arms.'),
-d('stick','X to X Stick Handles','xtox',45,0,0,'Stick + puck + 5 X marks',['Set out 5 X marks numbered 1 to 5.','Out: 1→2→1→3→2→4→3→5','Back: 5→4→5→3→4→2→3→1→2→1'],'Tape X marks on the floor like the picture on his sheet.'),
+d('stick','X to X Stick Handles','xtox',0,2,0,'Stick + puck + 5 X marks',['Set out 5 X marks numbered 1 to 5.','Forward: 1→2→1→3→2→4→3→5','Reverse: 5→4→5→3→4→2→3→1→2→1','Forward + reverse = 1 rep. Do 2!'],'Tape X marks on the floor like the picture on his sheet.'),
 d('stick','Figure 8','fig8',0,10,0,'Stick + puck + 2 pucks',['Place 2 pucks on the floor.','Go around them in an 8.','Keep the puck on your blade.'],'Count one for every full 8.'),
 d('stick','Passer Passes','passer',0,10,0,'Stick + puck + passer',['Stand in front of the passer.','Pass the puck into it.','Catch it soft on your blade.'],'Soft catch: let the blade give a little when the puck comes back.'),
 /* from his Workout sheet (b40–b47) */
@@ -359,7 +359,7 @@ d('power','Weight Twists','twist',0,10,0,'Light weight',['Sit, knees bent, lean 
 d('power','Weight Press','press',0,10,0,'Light weights',['Weights at your shoulders.','Push them up to the sky!','Bring them down slow.'],'Light weights only.'),
 d('power','Bear Crawl (there & back)','bear',0,1,0,'',['Hands and feet, knees up.','Crawl to the other side…','…and back!'],'Back flat like a table.'),
 d('power','Push Ups','pushup',0,5,0,'',['Body straight like a hockey stick.','Chest down, push up.','Too hard? Use your knees.'],'Knee push ups count too!')
-].map((x,i)=>({...x,reps:i>=32&&i<=39&&x.reps?15:x.reps,secs:x.secs&&['warm','legs','bal','cool'].includes(x.cat)?45:x.secs,id:'b'+i,sw:!!x.sw,pin:i>=32&&i<=39,unit:{42:'each leg',46:'trip'}[i]||''}));
+].map((x,i)=>({...x,reps:i>=32&&i<=39&&i!==37&&x.reps?15:x.reps,secs:x.secs&&['warm','legs','bal','cool'].includes(x.cat)?45:x.secs,id:'b'+i,sw:!!x.sw,pin:i>=32&&i<=39,unit:{37:'times forward + back',42:'each leg',46:'trip'}[i]||''}));
 const RBUILT=[
 {id:'r-stick',name:'Stickhandling Practice',cat:'stick',rounds:2,water:true,warm:[],main:['b32','b33','b34','b35','b36','b37','b38','b39'],cool:[],finish:'Shoot and score! One shot into the net to end practice.'},
 {id:'r-workout',name:'Workout',cat:'power',rounds:2,water:true,warm:['b1','b2'],main:['b40','b41','b42','b43','b44','b45','b46','b47'],cool:['b29','b30'],finish:''}];
